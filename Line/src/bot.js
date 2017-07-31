@@ -1,4 +1,6 @@
 const linebot = require('linebot');
+const bot_callback = require('./botCallback');
+const message_objects = require('./messageObject');
 require('dotenv').config()
 
 const bot = linebot({
@@ -54,239 +56,41 @@ bot.on('message', function (event) {
 					});
 					break;
 				case 'bot coins':
-					event.reply(
-						{
-							"type": "template",
-							"altText": "幣價查詢",
-							"template": {
-								"type": "carousel",
-								"columns": [
-									{
-										// "thumbnailImageUrl": "https://technoclever.com/wp-content/uploads/2017/07/List-Of-Cryptocurrencies-in-India-Best-to-Invest.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
-										"actions": [
-											{
-												"type": "postback",
-												"label": "BTC",
-												"data": "action=buy&itemid=111"
-											},
-											{
-												"type": "postback",
-												"label": "ETH",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "EXP",
-												"data": "action=buy&itemid=222"
-											},
-										]
-									},
-									{
-										// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
-										"actions": [
-											
-											{
-												"type": "postback",
-												"label": "ETC",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "XMR",
-												"data": "action=buy&itemid=222"
-											},
-												{
-												"type": "postback",
-												"label": "ZEC",
-												"data": "action=buy&itemid=222"
-											}
-										]
-									},
-									{
-										// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
-										"actions": [
-										
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "LTC",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "XRP",
-												"data": "action=buy&itemid=222"
-											}
-										]
-									}
-								]
-							}
-						}
-							
-
-					);
+					event.reply(message_objects.bot_coins);
 					break;
 				case 'p/b網查詢':
-						event.reply(
-						{
-							"type": "template",
-							"altText": "P/B網查詢",
-							"template": {
-								"type": "carousel",
-								"columns": [
-									{
-										"thumbnailImageUrl": "https://poloniex.com/images/poloniex_icon.png",
-										"title": "Poloniex 幣價查詢",
-										"text": "下列為快捷按鈕。欲查詢其他幣種，請輸入 bot polo {coin}。(範例：bot polo xmr)",
-										"actions": [
-											{
-												"type": "postback",
-												"label": "ETH",
-												"data": "action=buy&itemid=111"
-											},
-											{
-												"type": "postback",
-												"label": "ZEC",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=buy&itemid=222"
-											}
-										]
-									},
-									{
-										"thumbnailImageUrl": "https://cdn-images-1.medium.com/max/2000/1*uCILqG0jwJs2qjKdUviVkg.png",
-										"title": "Bittrex 幣價查詢",
-										"text": "下列為快捷按鈕。欲查詢其他幣種，請輸入 bot bitt {coin}。(範例：bot bitt xmr)",
-										"actions": [											
-											{
-												"type": "postback",
-												"label": "ETH",
-												"data": "action=buy&itemid=111"
-											},
-											{
-												"type": "postback",
-												"label": "ZEC",
-												"data": "action=buy&itemid=222"
-											},
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=buy&itemid=222"
-											}
-										]
-									}
-								]
-							}
-						}
-							
-
-					);
+					event.reply(message_objects.bot_polo_bitt);
 					break;
 
 				case 'bot ethwallet':
-					event.reply({
-						type: 'template',
-						altText: 'ETH 錢包記錄查詢',
-						template: {
-							type: 'buttons',
-							thumbnailImageUrl: 'http://www.sgebs.ro/uploads/images/2016/7/1/big-ethereum-logo-ljb3.jpg',
-							title: 'ETH 錢包記錄查詢',
-							text: '請選擇操作',
-							actions: [{
-								type: 'postback',
-								label: '新增地址',
-								data: 'action=buy&itemid=123'
-							}, {
-								type: 'postback',
-								label: '查詢紀錄',
-								data: 'action=buy&itemid=123'
-							}]
-						}
-					});
+					event.reply(message_objects.bot_ethwallet);
 					break;	
 				
 				case 'bot miner':
-					event.reply({
-						type: 'template',
-						altText: 'MC 錢包記錄查詢',
-						template: {
-							type: 'buttons',
-							thumbnailImageUrl: 'https://musicoin.org/images/thumbnail.png',
-							title: 'MC 錢包記錄查詢',
-							text: '請選擇操作',
-							actions: [{
-								type: 'postback',
-								label: '新增地址',
-								data: 'action=buy&itemid=123'
-							}, {
-								type: 'postback',
-								label: '查詢紀錄',
-								data: 'action=buy&itemid=123'
-							}]
-						}
-					});
+					event.reply(message_objects.bot_miner);
 					break;	
-				
+				case 'help':
+					event.reply(message_objects.HELP_MESSAGE);
+					break;
 					
 				case 'Multiple':
 					return event.reply(['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']);
 					break;
-				case 'Version':
+				case 'version':
 					event.reply('目前chatbot版本為' + require('../package.json').version);
-					break;
-				case 'bot coins':
-					event.reply({
-						type: 'template',
-						altText: '幣價查詢',
-						template: {
-							type: 'buttons',
-							thumbnailImageUrl: 'https://technoclever.com/wp-content/uploads/2017/07/List-Of-Cryptocurrencies-in-India-Best-to-Invest.jpg',
-							title: '幣價查詢',
-							text: '選擇要查詢的幣種',
-							actions: [{
-								type: 'postback',
-								label: 'BTC',
-								data: 'action=buy&itemid=123'
-							}, {
-								type: 'postback',
-								label: 'ETH',
-								data: 'action=buy&itemid=123'
-							}, {
-								type: 'postback',
-								label: 'EXP',
-								data: 'action=buy&itemid=123'
-							}, {
-								type: 'postback',
-								label: 'ETC',
-								data: 'action=buy&itemid=123'
-							}]
-						}
-					});
-
-					
-					break;
+					break;			
 				default:
 					event.reply(msg).then(function (data) {
-						console.log('Success', data);
+						console.log('Success', msg, data);
 					}).catch(function (error) {
 						console.log('Error', error);
 					});
 					break;
+				console.log('Success', msg, data);
 			}
 			break;
+
+
 		case 'image':
 			event.message.content().then(function (data) {
 				const s = data.toString('base64').substring(0, 30);
@@ -334,7 +138,7 @@ bot.on('leave', function (event) {
 });
 
 bot.on('postback', function (event) {
-	event.reply('postback: ' + event.postback.data);
+	bot_callback.process_callback(event, event.postback.data);
 });
 
 bot.on('beacon', function (event) {
