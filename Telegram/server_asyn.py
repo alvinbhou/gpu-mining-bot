@@ -17,9 +17,6 @@ BOT_MINE = '挖礦收益'
 ETH_WALLET = 'ETH錢包紀錄查詢'
 MC_MINE = 'MC礦工查看'
 HELP = 'HELP'
-# TEMP HARD CODE FOR NOW
-MC_MINE_MESSAGE = ' [ GPUmine Music pool ] \n[ Miner ] -> 0x6746b0b11f2c723ae85a016744481b00cb13a007\n[ Hashrate ] -> 90 MHS\n[ Penging   ] -> 36\n[ TotalPaid ] -> 4741\n [ LastPaid time ] \n2017/07/09 21:42:29\n[ LastPaid amount ] \n91.624412607\nearn/day -> 255.371\nbtc/day -> 0.002844\nusd/day -> 7.2\n ntd/day -> 216.99\n[ worker ] -> 2 / 0\n[ lastshare ] -> 2017/07/10 00:31:46 \n HARDCODE FOR TEST\n'
-
 
 class User:
     def __init__(self, chatid):        
@@ -57,9 +54,7 @@ class User:
             self.freeAllStates(0)
             self.mc_mine_state = True
             # self.general_state = False
-            return
-
-                   
+            return                   
         
         if(msg == ALTCOIN_QUERY):
             self.freeAllStates(0)
@@ -91,7 +86,6 @@ class User:
             self.mining_profit_state = True
             # self.general_state = False
             return
-
         self.freeAllStates(1)
             
 
@@ -139,14 +133,10 @@ service_keyboard = ReplyKeyboardMarkup(
 class GPUMiningBot(telepot.aio.helper.ChatHandler):
 
     def __init__(self, *args, **kwargs):
-        super(GPUMiningBot, self).__init__(*args, **kwargs)    
-        self._count = 0
-    
+        super(GPUMiningBot, self).__init__(*args, **kwargs)
 
-
-    async def on_chat_message(self, msg):     
-        self._count += 1     
-        # bad practice, temporarily 
+    async def on_chat_message(self, msg):      
+        # two lines of keyboard
         keyboard1 = []                         
         keyboard2 = []   
         
@@ -303,11 +293,11 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
         # # # # # # # # # # # # # # # # #     
         
        
-
+        # Default reply
         if user.general_state == True:
             await self.sender.sendMessage( '您好，請問您需要什麼服務？', reply_markup=service_keyboard)
 
-    # cancel inline keyboard      
+    # Cancel inline keyboard      
     async def _cancel_last(self):
         if hasattr(self, '_editor'):
             if(self._editor):
@@ -315,7 +305,7 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
                 self._editor = None
                 self._edit_msg_ident = None
 
-    # callback queries
+    # Callback queries
     async def on_callback_query(self, msg):
         query_id, chat_id, query_data = telepot.glance(msg, flavor='callback_query')    
 
@@ -324,8 +314,7 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
             coin = query_data.split('_')[2]
             await self.bot.answerCallbackQuery(query_id, text= coin + "查詢中...")
             reply = callAPI('coin', {'coin': coin, 'usersay': 'bot '+ coin, 'channel': 'tg', 'callerid': chat_id })            
-            await self.sender.sendMessage(reply)
-           
+            await self.sender.sendMessage(reply)           
             
         
         # For bank of Taiwan query search 

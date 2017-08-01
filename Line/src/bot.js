@@ -11,6 +11,9 @@ const bot = linebot({
 });
 
 bot.on('message', function (event) {
+	var chat_id = event.source.profile().then(function (profile) {
+						return  profile.userId;
+					});
 	switch (event.message.type) {
         case 'text':
             var msg = event.message.text.toLowerCase();
@@ -145,6 +148,6 @@ bot.on('beacon', function (event) {
 	event.reply('beacon: ' + event.beacon.hwid);
 });
 
-bot.listen('/linewebhook', process.env.PORT || 8089, function () {
+bot.listen('/webhook', process.env.PORT || 8089, function () {
 	console.log('LineBot is running.');
 });
