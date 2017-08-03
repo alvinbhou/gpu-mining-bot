@@ -1,6 +1,6 @@
 var bot_coins = {
 						type: 'imagemap',
-						baseUrl: 'https://i.imgur.com/GFpVR10.png/700',
+						baseUrl: 'https://i.imgur.com/FPRV3ZE.png/700',
 						altText: '幣價查詢',
 						baseSize: { height: 461, width: 701 },
 						actions: [
@@ -98,77 +98,54 @@ var bot_coins = {
 						]
 					};
 
-var bot_coins_deprecate = {
+var bot_polo_twb = {
 							"type": "template",
-							"altText": "幣價查詢",
+							"altText": "P網/台銀幣價查詢",
 							"template": {
 								"type": "carousel",
 								"columns": [
 									{
 										// "thumbnailImageUrl": "https://technoclever.com/wp-content/uploads/2017/07/List-Of-Cryptocurrencies-in-India-Best-to-Invest.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
+										"title": "P/B網幣價查詢",
+										"text": " 欲查詢其他幣種，請輸入 bot polo {coin} [範例: bot polo xmr]",
 										"actions": [
 											{
 												"type": "postback",
 												"label": "BTC",
-												"data": "action=botcoin&itemid=btc"
+												"data": '{"action":"bot_polo","itemid":"btc"}'
 											},
 											{
 												"type": "postback",
 												"label": "ETH",
-												"data": "action=botcoin&itemid=eth"
+												"data": '{"action":"bot_polo","itemid":"eth"}'
 											},
 											{
 												"type": "postback",
-												"label": "EXP",
-												"data": "action=botcoin&itemid=exp"
+												"label": "MC",
+												"data": '{"action":"bot_polo","itemid":"mc"}'
 											},
 										]
 									},
 									{
 										// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
+										"title": "台銀幣價查詢",
+										"text": "欲查詢其他幣種，請輸入 bot {coin}\n [範例: bot HKD]",
 										"actions": [
 											
 											{
 												"type": "postback",
-												"label": "ETC",
-												"data": "action=botcoin&itemid=etc"
+												"label": "USD 美金",
+												"data": '{"action":"bot_twb","itemid":"usd"}'
 											},
 											{
 												"type": "postback",
-												"label": "XMR",
-												"data": "action=botcoin&itemid=xmr"
+												"label": "CNY 人民幣",
+												"data": '{"action":"bot_twb","itemid":"cny"}'
 											},
 												{
 												"type": "postback",
-												"label": "ZEC",
-												"data": "action=botcoin&itemid=zec"
-											}
-										]
-									},
-									{
-										// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
-										"title": "幣價查詢",
-										"text": "請選擇要查詢的幣種",
-										"actions": [
-										
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=botcoin&itemid=mc"
-											},
-											{
-												"type": "postback",
-												"label": "LTC",
-												"data": "action=botcoin&itemid=ltc"
-											},
-											{
-												"type": "postback",
-												"label": "XRP",
-												"data": "action=botcoin&itemid=xrp"
+												"label": "JPY 日幣",
+												"data": '{"action":"bot_twb","itemid":"jpy"}'
 											}
 										]
 									}
@@ -176,7 +153,7 @@ var bot_coins_deprecate = {
 							}
 						};
 						
-var bot_polo_bitt = {
+var bot_polo_bitt_deprecated = {
 							"type": "template",
 							"altText": "P/B網查詢",
 							"template": {
@@ -215,11 +192,11 @@ var bot_ethwallet = {
 							actions: [{
 								type: 'postback',
 								label: '新增地址',
-								data: 'action=bot_ethwallet_subsribe&'
+								data: '{"action":"bot_ethwallet_subsribe"}'
 							}, {
 								type: 'postback',
 								label: '查詢紀錄',
-								data: 'action=bot_ethwallet_query&itemid=123'
+								data: '{"action":"bot_ethwallet_query", "itemid":123}'
 							}]
 						}
 					};
@@ -234,11 +211,11 @@ var bot_miner = {
 							actions: [{
 								type: 'postback',
 								label: '新增地址',
-								data: 'action=bot_miner_subsribe'
+								data: '{"action":"bot_miner_subsribe"}'
 							}, {
 								type: 'postback',
 								label: '查詢紀錄',
-								data: 'action=bot_miner_query'
+								data: '{"action":"bot_miner_query"}'
 							}]
 						}
 					};
@@ -250,10 +227,8 @@ var BOT_BTC_MESSAGE =  '[BTC] \n[ bitoex_buy ] 83091(TWD) \n[ bitoex_sell ] 7592
 var MC_MINE_MESSAGE = ' [ GPUmine Music pool ] \n[ Miner ] -> 0x6746b0b11f2c723ae85a016744481b00cb13a007\n[ Hashrate ] -> 90 MHS\n[ Penging   ] -> 36\n[ TotalPaid ] -> 4741\n [ LastPaid time ] \n2017/07/09 21:42:29\n[ LastPaid amount ] \n91.624412607\nearn/day -> 255.371\nbtc/day -> 0.002844\nusd/day -> 7.2\n ntd/day -> 216.99\n[ worker ] -> 2 / 0\n[ lastshare ] -> 2017/07/10 00:31:46 \n HARDCODE FOR TEST\n'
 
 
-
-	
 exports.HELP_MESSAGE = HELP_MESSAGE
 exports.bot_coins = bot_coins
-exports.bot_polo_bitt = bot_polo_bitt
+exports.bot_polo_twb = bot_polo_twb
 exports.bot_ethwallet = bot_ethwallet
 exports.bot_miner = bot_miner
