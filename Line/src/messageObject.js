@@ -1,4 +1,104 @@
 var bot_coins = {
+						type: 'imagemap',
+						baseUrl: 'https://i.imgur.com/GFpVR10.png/700',
+						altText: '幣價查詢',
+						baseSize: { height: 461, width: 701 },
+						actions: [
+							{
+								"type": "message",
+								"text": "bot btc",
+								"area": {
+									"x": 0,
+									"y": 0,
+									"width": 700,
+									"height": 200
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot eth",
+								"area": {
+									"x": 0,
+									"y": 200,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot exp",
+								"area": {
+									"x": 175,
+									"y": 200,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot etc",
+								"area": {
+									"x": 350,
+									"y": 200,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot xmr",
+								"area": {
+									"x": 525,
+									"y": 200,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot zec",
+								"area": {
+									"x": 0,
+									"y": 330,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot mc",
+								"area": {
+									"x": 175,
+									"y": 330,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot ltc",
+								"area": {
+									"x": 350,
+									"y": 330,
+									"width": 175,
+									"height": 130
+								}
+							},
+							{
+								"type": "message",
+								"text": "bot xrp",
+								"area": {
+									"x": 525,
+									"y": 330,
+									"width": 175,
+									"height": 130
+								}
+							},
+
+						]
+					};
+
+var bot_coins_deprecate = {
 							"type": "template",
 							"altText": "幣價查詢",
 							"template": {
@@ -80,54 +180,29 @@ var bot_polo_bitt = {
 							"type": "template",
 							"altText": "P/B網查詢",
 							"template": {
-								"type": "carousel",
-								"columns": [
+								"type": "buttons",							
+								// "thumbnailImageUrl": "https://poloniex.com/images/poloniex_icon.png",
+								"title": "Poloniex & Bittrex幣價查詢",
+								"text": "下列為快捷按鈕。\n 欲查詢其他幣種，請輸入 bot polo {coin}。(範例：bot polo xmr)",
+								"actions": [
 									{
-										"thumbnailImageUrl": "https://poloniex.com/images/poloniex_icon.png",
-										"title": "Poloniex 幣價查詢",
-										"text": "下列為快捷按鈕。欲查詢其他幣種，請輸入 bot polo {coin}。(範例：bot polo xmr)",
-										"actions": [
-											{
-												"type": "postback",
-												"label": "ETH",
-												"data": "action=bot_polo&itemid=eth"
-											},
-											{
-												"type": "postback",
-												"label": "ZEC",
-												"data": "action=bot_polo&itemid=zec"
-											},
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=bot_polo&itemid=mc"
-											}
-										]
+										"type": "postback",
+										"label": "ETH",
+										"data": "action=bot_polo&itemid=eth"
 									},
 									{
-										"thumbnailImageUrl": "https://cdn-images-1.medium.com/max/2000/1*uCILqG0jwJs2qjKdUviVkg.png",
-										"title": "Bittrex 幣價查詢",
-										"text": "下列為快捷按鈕。欲查詢其他幣種，請輸入 bot bitt {coin}。(範例：bot bitt xmr)",
-										"actions": [											
-											{
-												"type": "postback",
-												"label": "ETH",
-												"data": "action=bot_bitt&itemid=eth"
-											},
-											{
-												"type": "postback",
-												"label": "ZEC",
-												"data": "action=bot_bitt&itemid=zec"
-											},
-											{
-												"type": "postback",
-												"label": "MC",
-												"data": "action=bot_bitt&itemid=mc"
-											}
-										]
+										"type": "postback",
+										"label": "ZEC",
+										"data": "action=bot_polo&itemid=zec"
+									},
+									{
+										"type": "postback",
+										"label": "MC",
+										"data": "action=bot_polo&itemid=mc"
 									}
 								]
 							}
+								
 						};
 
 var bot_ethwallet = {

@@ -1,6 +1,9 @@
 const linebot = require('linebot');
-const bot_callback = require('./botCallback');
+const bot_API = require('./botAPI');
 const message_objects = require('./messageObject');
+const async = require("async");
+
+
 require('dotenv').config()
 
 const bot = linebot({
@@ -10,6 +13,12 @@ const bot = linebot({
 	verify: true // default=true
 });
 
+const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP'];
+const CHANNEL = 'line';
+var COINS_DATA = {
+	'BTC': ''
+};
+
 bot.on('message', function (event) {
 	var chat_id = event.source.profile().then(function (profile) {
 						return  profile.userId;
@@ -17,81 +26,65 @@ bot.on('message', function (event) {
 	switch (event.message.type) {
         case 'text':
             var msg = event.message.text.toLowerCase();
-			switch (msg) {
-				case 'me':
-					event.source.profile().then(function (profile) {
-						return event.reply('Hello ' + profile.displayName + ' ' + profile.userId);
-					});
-					break;
-				case 'picture':
-					event.reply({
-						type: 'image',
-						originalContentUrl: 'https://d.line-scdn.net/stf/line-lp/family/en-US/190X190_line_me.png',
-						previewImageUrl: 'https://d.line-scdn.net/stf/line-lp/family/en-US/190X190_line_me.png'
-					});
-					break;
-				case 'location':
-					event.reply({
-						type: 'location',
-						title: 'LINE Plus Corporation',
-						address: '1 Empire tower, Sathorn, Bangkok 10120, Thailand',
-						latitude: 13.7202068,
-						longitude: 100.5298698
-					});
-					break;
-				case 'confirm':
-					event.reply({
-						type: 'template',
-						altText: 'this is a confirm template',
-						template: {
-							type: 'confirm',
-							text: 'Are you sure?',
-							actions: [{
-								type: 'message',
-								label: 'Yes',
-								text: 'yes'
-							}, {
-								type: 'message',
-								label: 'No',
-								text: 'no'
-							}]
-						}
-					});
-					break;
-				case 'bot coins':
-					event.reply(message_objects.bot_coins);
-					break;
-				case 'p/b網查詢':
-					event.reply(message_objects.bot_polo_bitt);
-					break;
-
-				case 'bot ethwallet':
-					event.reply(message_objects.bot_ethwallet);
-					break;	
-				
-				case 'bot miner':
-					event.reply(message_objects.bot_miner);
-					break;	
-				case 'help':
-					event.reply(message_objects.HELP_MESSAGE);
-					break;
-					
-				case 'Multiple':
-					return event.reply(['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']);
-					break;
-				case 'version':
-					event.reply('目前chatbot版本為' + require('../package.json').version);
-					break;			
-				default:
-					event.reply(msg).then(function (data) {
-						console.log('Success', msg, data);
-					}).catch(function (error) {
-						console.log('Error', error);
-					});
-					break;
-				console.log('Success', msg, data);
+			
+			if (msg == 'me'){
+				event.source.profile().then(function (profile) {
+					return event.reply('Hello ' + profile.displayName + ' ' + profile.userId);
+				});
 			}
+			else if(msg == 'bot help' || msg.includes('help')){
+				bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg == 'bot coins'){
+				event.reply(['請選擇要查詢的幣種', message_objects.bot_coins]);
+			}
+			else if(msg == 'bot mine'){
+				bot_API.callAPI('mine', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg == 'bot help'){
+				bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg == 'bot btc'){
+				bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg == 'p/b網查詢' || msg =="bot polo"){
+				event.reply(message_objects.bot_polo_bitt);
+			}
+			else if(msg =='bot ethwallet'){
+				event.reply(message_objects.bot_ethwallet);
+			}
+			else if(msg == 'bot miner'){
+				event.reply(message_objects.bot_miner);
+			}
+			else if(msg == 'version'){
+				event.reply('目前chatbot版本為' + require('../package.json').version);
+			}
+			else if(msg.substring(0,4) == 'bot '){
+				console.log(msg.substring(4,msg.length));
+				// Altcoins
+				for(var i = 0; i < ALTCOINS.length; ++i){
+					
+					if(msg.substring(4,msg.length) ==  ALTCOINS[i].toLowerCase()){
+						
+						bot_API.callAPI('coin', {'coin': ALTCOINS[i],'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+					}
+				}
+			}
+			else{
+				event.reply('您好，請問您需要什麼服務？');
+			}		
 			break;
+			
+			
+				// 	event.reply(msg).then(function (data) {
+				// 		console.log('Success', msg, data);
+				// 	}).catch(function (error) {
+				// 		console.log('Error', error);
+				// 	});
+				// 	break;
+				// console.log('Success', msg, data);
+			
+		
 
 
 		case 'image':
@@ -141,7 +134,7 @@ bot.on('leave', function (event) {
 });
 
 bot.on('postback', function (event) {
-	bot_callback.process_callback(event, event.postback.data);
+	bot_API.event_callback(event, event.postback.data);
 });
 
 bot.on('beacon', function (event) {
@@ -151,3 +144,11 @@ bot.on('beacon', function (event) {
 bot.listen('/webhook', process.env.PORT || 8089, function () {
 	console.log('LineBot is running.');
 });
+
+function getCoinInfo(params) {
+	for(var i = 0; i < ALTCOINS.length; ++i){
+		bot_API.callAPI(ALTCOINS[i], 'bot update coin info', COINS_DATA);
+	}
+}
+
+// setInterval(getCoinInfo, 60000);
