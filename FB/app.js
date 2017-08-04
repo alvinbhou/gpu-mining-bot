@@ -18,11 +18,12 @@ const
   https = require('https'),  
   request = require('request'),
   fs = require('fs'),
-  http = require('http');
+  http = require('http'),
+  message_data = require('./models/messageData');
 
-var privateKey = fs.readFileSync('../key.pem', 'utf8');
-var certificate = fs.readFileSync('../cert.pem', 'utf8');
-var credentials = {key: privateKey, cert: certificate, passphrase: 'gpumine'};
+// var privateKey = fs.readFileSync('../key.pem', 'utf8');
+// var certificate = fs.readFileSync('../cert.pem', 'utf8');
+// var credentials = {key: privateKey, cert: certificate, passphrase: 'gpumine'};
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -104,7 +105,7 @@ app.post('/webhook', function (req, res) {
         } else if (messagingEvent.message) {
           receivedMessage(messagingEvent);
         } else if (messagingEvent.delivery) {
-          receivedDeliveryConfirmation(messagingEvent);
+          (messagingEvent);
         } else if (messagingEvent.postback) {
           receivedPostback(messagingEvent);
         } else if (messagingEvent.read) {
@@ -204,7 +205,7 @@ function receivedAuthentication(event) {
 
   // When an authentication is received, we'll send a message back to the sender
   // to let them know it was successful.
-  sendTextMessage(senderID, "Authentication successful");
+  callSendAPI(message_data.TextMessage(senderID, "Authentication successful"));
 }
 
 /*
@@ -226,11 +227,12 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
+  console.log('-- -- -- -- Recieved Message -- -- -- --')
+  console.log('-- Recieved Message from [%d] to [%d] at time %d --', senderID, recipientID, timeOfMessage);
+  // console.log("SenderID  and recipientID %d at Time: %d with message:", senderID, recipientID, timeOfMessage);
+  console.log('-- Recieved message:',message.text ); 
+  
 
-  console.log("SenderID %d and recipientID %d at Time: %d with message:", 
-    senderID, recipientID, timeOfMessage);
-  console.log('-------text:-----');
-  console.log(JSON.stringify(message));
 
   var isEcho = message.is_echo;
   var messageId = message.mid;
@@ -244,15 +246,15 @@ function receivedMessage(event) {
 
   if (isEcho) {
     // Just logging message echoes to console
-    console.log("Received echo for message %s and app %d with metadata %s", 
-      messageId, appId, metadata);
+    // console.log("Received echo for message {%s}", 
+    //   messageId);
     return;
   } else if (quickReply) {
     var quickReplyPayload = quickReply.payload;
-    console.log("Quick reply for message %s with payload %s",
+    console.log("Quick reply for message {%s} with payload {%s}",
       messageId, quickReplyPayload);
 
-    sendTextMessage(senderID, "Quick reply tapped");
+    callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
     return;
   }
 
@@ -263,62 +265,62 @@ function receivedMessage(event) {
     // the text we received.
     switch (messageText) {
       case 'image':
-        sendImageMessage(senderID);
+        callSendAPI(message_data.ImageMessage(senderID));
         break;
 
       case 'gif':
-        sendGifMessage(senderID);
+        callSendAPI(message_data.GifMessage(senderID));
         break;
 
       case 'audio':
-        sendAudioMessage(senderID);
+        callSendAPI(message_data.AudioMessage(senderID));
         break;
 
       case 'video':
-        sendVideoMessage(senderID);
+        callSendAPI(message_data.VideoMessage(senderID));
         break;
 
       case 'file':
-        sendFileMessage(senderID);
+        callSendAPI(message_data.FileMessage(senderID));
         break;
 
       case 'button':
-        sendButtonMessage(senderID);
+        callSendAPI(message_data.ButtonMessage(senderID));
         break;
 
       case 'generic':
-        sendGenericMessage(senderID);
+        callSendAPI(message_data.GenericMessage(senderID));
         break;
 
       case 'receipt':
-        sendReceiptMessage(senderID);
+        callSendAPI(message_data.ReceiptMessage(senderID));
         break;
 
       case 'quick reply':
-        sendQuickReply(senderID);
+        callSendAPI(message_data.QuickReply(senderID));
         break;        
 
       case 'read receipt':
-        sendReadReceipt(senderID);
+        callSendAPI(message_data.ReadReceipt(senderID));
         break;        
 
       case 'typing on':
-        sendTypingOn(senderID);
+        callSendAPI(message_data.TypingOn(senderID));
         break;        
 
       case 'typing off':
-        sendTypingOff(senderID);
+        callSendAPI(message_data.TypingOff(senderID));
         break;        
 
       case 'account linking':
-        sendAccountLinking(senderID);
+        callSendAPI(message_data.AccountLinking(senderID));
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
+        callSendAPI(message_data.TextMessage(senderID, messageText));
     }
   } else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
+    callSendAPI(message_data.TextMessage(senderID, "Message with attachment received"));
   }
 }
 
@@ -338,14 +340,14 @@ function receivedDeliveryConfirmation(event) {
   var watermark = delivery.watermark;
   var sequenceNumber = delivery.seq;
 
-  if (messageIDs) {
-    messageIDs.forEach(function(messageID) {
-      console.log("Received delivery confirmation for message ID: %s", 
-        messageID);
-    });
-  }
+  // if (messageIDs) {
+  //   messageIDs.forEach(function(messageID) {
+  //     console.log("Received delivery confirmation for message ID: %s", 
+  //       messageID);
+  //   });
+  // }
 
-  console.log("All message before %d were delivered.", watermark);
+  // console.log("All message before %d were delivered.", watermark);
 }
 
 
@@ -370,7 +372,7 @@ function receivedPostback(event) {
 
   // When a postback is called, we'll send a message back to the sender to 
   // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
+  callSendAPI(message_data.TextMessage(senderID, "Postback called"));
 }
 
 /*
@@ -388,8 +390,8 @@ function receivedMessageRead(event) {
   var watermark = event.read.watermark;
   var sequenceNumber = event.read.seq;
 
-  console.log("Received message read event for watermark %d and sequence " +
-    "number %d", watermark, sequenceNumber);
+  // console.log("Received message read event for watermark {%d} and sequence " +
+  //   "number %d", watermark, sequenceNumber);
 }
 
 /*
@@ -411,399 +413,7 @@ function receivedAccountLink(event) {
     "and auth code %s ", senderID, status, authCode);
 }
 
-/*
- * Send an image using the Send API.
- *
- */
-function sendImageMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "image",
-        payload: {
-          url: SERVER_URL + "/assets/rift.png"
-        }
-      }
-    }
-  };
 
-  callSendAPI(messageData);
-}
-
-/*
- * Send a Gif using the Send API.
- *
- */
-function sendGifMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "image",
-        payload: {
-          url: SERVER_URL + "/assets/instagram_logo.gif"
-        }
-      }
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send audio using the Send API.
- *
- */
-function sendAudioMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "audio",
-        payload: {
-          url: SERVER_URL + "/assets/sample.mp3"
-        }
-      }
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a video using the Send API.
- *
- */
-function sendVideoMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "video",
-        payload: {
-          url: SERVER_URL + "/assets/allofus480.mov"
-        }
-      }
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a file using the Send API.
- *
- */
-function sendFileMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "file",
-        payload: {
-          url: SERVER_URL + "/assets/test.txt"
-        }
-      }
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a text message using the Send API.
- *
- */
-function sendTextMessage(recipientId, messageText) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: '[GPu]' + messageText,
-      metadata: "DEVELOPER_DEFINED_METADATA"
-    }
-  };
-  console.log(messageData);
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a button message using the Send API.
- *
- */
-function sendButtonMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "This is test text",
-          buttons:[{
-            type: "web_url",
-            url: "https://www.oculus.com/en-us/rift/",
-            title: "Open Web URL"
-          }, {
-            type: "postback",
-            title: "Trigger Postback",
-            payload: "DEVELOPER_DEFINED_PAYLOAD"
-          }, {
-            type: "phone_number",
-            title: "Call Phone Number",
-            payload: "+16505551234"
-          }]
-        }
-      }
-    }
-  };  
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a Structured Message (Generic Message type) using the Send API.
- *
- */
-function sendGenericMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "rift",
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
-            image_url: SERVER_URL + "/assets/rift.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/rift/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for first bubble",
-            }],
-          }, {
-            title: "touch",
-            subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",               
-            image_url: SERVER_URL + "/assets/touch.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/touch/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for second bubble",
-            }]
-          }]
-        }
-      }
-    }
-  };  
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a receipt message using the Send API.
- *
- */
-function sendReceiptMessage(recipientId) {
-  // Generate a random receipt ID as the API requires a unique ID
-  var receiptId = "order" + Math.floor(Math.random()*1000);
-
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message:{
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "receipt",
-          recipient_name: "Peter Chang",
-          order_number: receiptId,
-          currency: "USD",
-          payment_method: "Visa 1234",        
-          timestamp: "1428444852", 
-          elements: [{
-            title: "Oculus Rift",
-            subtitle: "Includes: headset, sensor, remote",
-            quantity: 1,
-            price: 599.00,
-            currency: "USD",
-            image_url: SERVER_URL + "/assets/riftsq.png"
-          }, {
-            title: "Samsung Gear VR",
-            subtitle: "Frost White",
-            quantity: 1,
-            price: 99.99,
-            currency: "USD",
-            image_url: SERVER_URL + "/assets/gearvrsq.png"
-          }],
-          address: {
-            street_1: "1 Hacker Way",
-            street_2: "",
-            city: "Menlo Park",
-            postal_code: "94025",
-            state: "CA",
-            country: "US"
-          },
-          summary: {
-            subtotal: 698.99,
-            shipping_cost: 20.00,
-            total_tax: 57.67,
-            total_cost: 626.66
-          },
-          adjustments: [{
-            name: "New Customer Discount",
-            amount: -50
-          }, {
-            name: "$100 Off Coupon",
-            amount: -100
-          }]
-        }
-      }
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a message with Quick Reply buttons.
- *
- */
-function sendQuickReply(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: "What's your favorite movie genre?",
-      quick_replies: [
-        {
-          "content_type":"text",
-          "title":"Action",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
-        },
-        {
-          "content_type":"text",
-          "title":"Comedy",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
-        },
-        {
-          "content_type":"text",
-          "title":"Drama",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
-        }
-      ]
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a read receipt to indicate the message has been read
- *
- */
-function sendReadReceipt(recipientId) {
-  console.log("Sending a read receipt to mark message as seen");
-
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    sender_action: "mark_seen"
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Turn typing indicator on
- *
- */
-function sendTypingOn(recipientId) {
-  console.log("Turning typing indicator on");
-
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    sender_action: "typing_on"
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Turn typing indicator off
- *
- */
-function sendTypingOff(recipientId) {
-  console.log("Turning typing indicator off");
-
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    sender_action: "typing_off"
-  };
-
-  callSendAPI(messageData);
-}
-
-/*
- * Send a message with the account linking call-to-action
- *
- */
-function sendAccountLinking(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "Welcome. Link your account.",
-          buttons:[{
-            type: "account_link",
-            url: SERVER_URL + "/authorize"
-          }]
-        }
-      }
-    }
-  };  
-
-  callSendAPI(messageData);
-}
 
 /*
  * Call the Send API. The message data goes in the body. If successful, we'll 
@@ -823,10 +433,10 @@ function callSendAPI(messageData) {
       var messageId = body.message_id;
 
       if (messageId) {
-        console.log("Successfully sent message with id %s to recipient %s", 
-          messageId, recipientId);
+        console.log("Successfully sent message to recipient [%s]", 
+           recipientId);
       } else {
-      console.log("Successfully called Send API for recipient %s", 
+      console.log("Successfully called Send API for recipient [%s]", 
         recipientId);
       }
     } else {
@@ -838,15 +448,15 @@ function callSendAPI(messageData) {
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid 
 // certificate authority.
-// app.listen(app.get('port'), function() {
-//   console.log('Node app is running on port', app.get('port'));
-// });
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
 
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+// var httpServer = http.createServer(app);
+// var httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(8877);
-httpsServer.listen(8443);
+// httpServer.listen(8877);
+// httpsServer.listen(8443);
 module.exports = app;
 
