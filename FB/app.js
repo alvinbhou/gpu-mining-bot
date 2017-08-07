@@ -1,13 +1,3 @@
-/*
- * Copyright 2016-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-/* jshint node: true, devel: true */
 'use strict';
 
 const 
@@ -19,7 +9,8 @@ const
   request = require('request'),
   fs = require('fs'),
   http = require('http'),
-  message_data = require('./models/messageData');
+  message_data = require('./models/messageData'),
+  messenger_settings = require('./models/messengerSettings');
 
 // var privateKey = fs.readFileSync('../key.pem', 'utf8');
 // var certificate = fs.readFileSync('../cert.pem', 'utf8');
@@ -30,6 +21,7 @@ app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
+messenger_settings.init();
 
 /*
  * Be sure to setup your config values before running this code. You can 
@@ -38,47 +30,22 @@ app.use(express.static('public'));
  */
 
 // App Secret can be retrieved from the App Dashboard
-const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ? 
-  process.env.MESSENGER_APP_SECRET :
-  config.get('appSecret');
-
+const APP_SECRET = config.get('appSecret');
 // Arbitrary value used to validate a webhook
-const VALIDATION_TOKEN = (process.env.MESSENGER_VALIDATION_TOKEN) ?
-  (process.env.MESSENGER_VALIDATION_TOKEN) :
-  config.get('validationToken');
-
+const VALIDATION_TOKEN =  config.get('validationToken');
 // Generate a page access token for your page from the App Dashboard
-const PAGE_ACCESS_TOKEN = (process.env.MESSENGER_PAGE_ACCESS_TOKEN) ?
-  (process.env.MESSENGER_PAGE_ACCESS_TOKEN) :
-  config.get('pageAccessToken');
+const PAGE_ACCESS_TOKEN =   config.get('pageAccessToken');
 
 // URL where the app is running (include protocol). Used to point to scripts and 
 // assets located at this address. 
-const SERVER_URL = (process.env.SERVER_URL) ?
-  (process.env.SERVER_URL) :
-  config.get('serverURL');
+const SERVER_URL = config.get('serverURL');
 
 if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
   console.error("Missing config values");
   process.exit(1);
 }
 
-var options = { method: 'POST',
-  url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
-  qs: { access_token: PAGE_ACCESS_TOKEN },
-  headers: { 'content-type': 'application/json' },
-  body: 
-   { whitelisted_domains: 
-      [ 
-        'https://raw.githubusercontent.com/',
-      'https://i.imgur.com/' ] },
-  json: true };
 
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
-
-  console.log(body);
-});
 
 /*
  * Use your own validation token. Check that the token used in the Webhook 
@@ -244,7 +211,7 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  console.log('-- -- -- -- Recieved Message -- -- -- --')
+  console.log('-------------- Recieved Message --------------')
   console.log('-- Recieved Message from [%d] to [%d] at time %d --', senderID, recipientID, timeOfMessage);
   // console.log("SenderID  and recipientID %d at Time: %d with message:", senderID, recipientID, timeOfMessage);
   console.log('-- Recieved message:',message.text ); 
@@ -276,6 +243,8 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
+    // typing on
+    callSendAPI(message_data.TypingOn(senderID));
 
     // If we receive a text message, check to see if it matches any special
     // keywords and send back the corresponding example. Otherwise, just echo
@@ -337,7 +306,7 @@ function receivedMessage(event) {
         callSendAPI(message_data.ListMessage(senderID));
         break;
 
-      default:
+      default:        
         callSendAPI(message_data.TextMessage(senderID, messageText));
     }
   } else if (messageAttachments) {
@@ -387,13 +356,19 @@ function receivedPostback(event) {
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
   var payload = event.postback.payload;
+  
 
-  console.log("Received postback for user %d and page %d with payload '%s' " + 
+  console.log("Received [POSTBACK] for user %d and page %d with payload '%s' " + 
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
   // When a postback is called, we'll send a message back to the sender to 
   // let them know it was successful
-  callSendAPI(message_data.TextMessage(senderID, "Postback called"));
+  if(payload == 'GET_STARTED_PAYLOAD'){
+    callSendAPI(message_data.TextMessage(senderID, "您好，請問您需要什麼服務？"));
+  }else{
+    callSendAPI(message_data.TextMessage(senderID, "Postback called"));
+  }
+  
 }
 
 /*
