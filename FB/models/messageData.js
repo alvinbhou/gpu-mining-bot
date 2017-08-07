@@ -1,3 +1,7 @@
+const config = require('config')
+const SERVER_URL = (process.env.SERVER_URL) ?
+  (process.env.SERVER_URL) :
+  config.get('serverURL');
 /*
  * Send an image using the Send API.
  *
@@ -402,6 +406,120 @@ function AccountLinking(recipientId) {
   return messageData;
 }
 
+function ListMessage(recipientId){
+    var messageData = {
+        "recipient":{
+            "id": recipientId
+        }, "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "list",
+                    "elements": [
+                        {
+                            "title": "Classic White T-Shirt",
+                            "image_url":  "https://i.imgur.com/Igi7KgR.jpg",
+                            "subtitle": "100% Cotton, 200% Comfortable",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        },
+                        {
+                            "title": "Classic Blue T-Shirt",
+                            "image_url":  SERVER_URL + "/assets/rift.png",
+                            "subtitle": "100% Cotton, 200% Comfortable",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        },
+                        {
+                            "title": "Classic Black T-Shirt",
+                            "image_url":  SERVER_URL + "/assets/rift.png",
+                            "subtitle": "100% Cotton, 200% Comfortable",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        },
+                        {
+                            "title": "Classic Gray T-Shirt",
+                            "image_url":  SERVER_URL + "/assets/rift.png",
+                            "subtitle": "100% Cotton, 200% Comfortable",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        }
+                    ],
+                    "buttons": [
+                        {
+                            "title": "View More",
+                            "type": "postback",
+                            "payload": "payload"                        
+                        }
+                    ]  
+                }
+            }
+        }
+   };
+    return messageData;  
+
+}
+
 exports.AccountLinking = AccountLinking
 exports.AudioMessage = AudioMessage
 exports.ButtonMessage = ButtonMessage
@@ -416,3 +534,4 @@ exports.TypingOn = TypingOn
 exports.TextMessage = TextMessage
 exports.ReadReceipt = ReadReceipt
 exports.ReceiptMessage = ReceiptMessage
+exports.ListMessage = ListMessage

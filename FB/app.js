@@ -63,6 +63,23 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
   process.exit(1);
 }
 
+var options = { method: 'POST',
+  url: 'https://graph.facebook.com/v2.6/me/messenger_profile',
+  qs: { access_token: PAGE_ACCESS_TOKEN },
+  headers: { 'content-type': 'application/json' },
+  body: 
+   { whitelisted_domains: 
+      [ 
+        'https://raw.githubusercontent.com/',
+      'https://i.imgur.com/' ] },
+  json: true };
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+
 /*
  * Use your own validation token. Check that the token used in the Webhook 
  * setup is the same token used here.
@@ -314,6 +331,10 @@ function receivedMessage(event) {
 
       case 'account linking':
         callSendAPI(message_data.AccountLinking(senderID));
+        break;
+
+      case 'list':
+        callSendAPI(message_data.ListMessage(senderID));
         break;
 
       default:
