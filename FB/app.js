@@ -1,27 +1,34 @@
 'use strict';
 
 const 
-  bodyParser = require('body-parser'),
-  config = require('config'),
-  crypto = require('crypto'),
-  express = require('express'),
-  https = require('https'),  
-  request = require('request'),
-  fs = require('fs'),
-  http = require('http'),
-  message_data = require('./models/messageData'),
-  messenger_settings = require('./models/messengerSettings');
+    bodyParser = require('body-parser'),
+    config = require('config'),
+    crypto = require('crypto'),
+    express = require('express'),
+    https = require('https'),  
+    request = require('request'),
+    fs = require('fs'),
+    http = require('http'),
+    message_data = require('./models/messageData'),
+    messenger_settings = require('./api/messengerSettings'),
+    bot_api = require('./api/botAPI');
 
-// var privateKey = fs.readFileSync('../key.pem', 'utf8');
-// var certificate = fs.readFileSync('../cert.pem', 'utf8');
-// var credentials = {key: privateKey, cert: certificate, passphrase: 'gpumine'};
+const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP'];
+const TWBCOINS = ['USD','CNY', 'HKD','JPY', 'GBP', 'AUD', 'CAD' , 'SGD', 'CHF', 'ZAR', 'SEK', 'NZD', 'THB', 'PHP', 'IDR', 'EUR', 'KRW', 'VND', 'MYR']
+
+const CHANNEL = 'FB';
+var COINS_DATA = {
+	'BTC': ''
+};
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
-messenger_settings.init();
+
+// init messenger_settings
+// messenger_settings.init();
 
 /*
  * Be sure to setup your config values before running this code. You can 
@@ -41,8 +48,8 @@ const PAGE_ACCESS_TOKEN =   config.get('pageAccessToken');
 const SERVER_URL = config.get('serverURL');
 
 if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
-  console.error("Missing config values");
-  process.exit(1);
+    console.error("Missing config values");
+    process.exit(1);
 }
 
 
@@ -53,14 +60,14 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
  *
  */
 app.get('/webhook', function(req, res) {
-  if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === VALIDATION_TOKEN) {
-    console.log("Validating webhook");
-    res.status(200).send(req.query['hub.challenge']);
-  } else {
-    console.error("Failed validation. Make sure the validation tokens match.");
-    res.sendStatus(403);          
-  }  
+    if (req.query['hub.mode'] === 'subscribe' &&
+        req.query['hub.verify_token'] === VALIDATION_TOKEN) {
+        console.log("Validating webhook");
+        res.status(200).send(req.query['hub.challenge']);
+    } else {
+        console.error("Failed validation. Make sure the validation tokens match.");
+        res.sendStatus(403);          
+    }  
 });
 
 
@@ -72,42 +79,42 @@ app.get('/webhook', function(req, res) {
  *
  */
 app.post('/webhook', function (req, res) {
-  var data = req.body;
+    var data = req.body;
 
-  // Make sure this is a page subscription
-  if (data.object == 'page') {
-    // Iterate over each entry
-    // There may be multiple if batched
-    data.entry.forEach(function(pageEntry) {
-      var pageID = pageEntry.id;
-      var timeOfEvent = pageEntry.time;
+    // Make sure this is a page subscription
+    if (data.object == 'page') {
+        // Iterate over each entry
+        // There may be multiple if batched
+        data.entry.forEach(function(pageEntry) {
+            var pageID = pageEntry.id;
+            var timeOfEvent = pageEntry.time;
 
-      // Iterate over each messaging event
-      pageEntry.messaging.forEach(function(messagingEvent) {
-        if (messagingEvent.optin) {
-          receivedAuthentication(messagingEvent);
-        } else if (messagingEvent.message) {
-          receivedMessage(messagingEvent);
-        } else if (messagingEvent.delivery) {
-          (messagingEvent);
-        } else if (messagingEvent.postback) {
-          receivedPostback(messagingEvent);
-        } else if (messagingEvent.read) {
-          receivedMessageRead(messagingEvent);
-        } else if (messagingEvent.account_linking) {
-          receivedAccountLink(messagingEvent);
-        } else {
-          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
-        }
-      });
-    });
+            // Iterate over each messaging event
+            pageEntry.messaging.forEach(function(messagingEvent) {
+            if (messagingEvent.optin) {
+                receivedAuthentication(messagingEvent);
+            } else if (messagingEvent.message) {
+                receivedMessage(messagingEvent);
+            } else if (messagingEvent.delivery) {
+                (messagingEvent);
+            } else if (messagingEvent.postback) {
+                receivedPostback(messagingEvent);
+            } else if (messagingEvent.read) {
+                receivedMessageRead(messagingEvent);
+            } else if (messagingEvent.account_linking) {
+                receivedAccountLink(messagingEvent);
+            } else {
+                console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+            }
+            });
+        });
 
-    // Assume all went well.
-    //
-    // You must send back a 200, within 20 seconds, to let us know you've 
-    // successfully received the callback. Otherwise, the request will time out.
-    res.sendStatus(200);
-  }
+        // Assume all went well.
+        //
+        // You must send back a 200, within 20 seconds, to let us know you've 
+        // successfully received the callback. Otherwise, the request will time out.
+        res.sendStatus(200);
+    }
 });
 
 /*
@@ -116,21 +123,21 @@ app.post('/webhook', function (req, res) {
  * 
  */
 app.get('/authorize', function(req, res) {
-  var accountLinkingToken = req.query.account_linking_token;
-  var redirectURI = req.query.redirect_uri;
+    var accountLinkingToken = req.query.account_linking_token;
+    var redirectURI = req.query.redirect_uri;
 
-  // Authorization Code should be generated per user by the developer. This will 
-  // be passed to the Account Linking callback.
-  var authCode = "1234567890";
+    // Authorization Code should be generated per user by the developer. This will 
+    // be passed to the Account Linking callback.
+    var authCode = "1234567890";
 
-  // Redirect users to this URI on successful login
-  var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
+    // Redirect users to this URI on successful login
+    var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
 
-  res.render('authorize', {
-    accountLinkingToken: accountLinkingToken,
-    redirectURI: redirectURI,
-    redirectURISuccess: redirectURISuccess
-  });
+    res.render('authorize', {
+        accountLinkingToken: accountLinkingToken,
+        redirectURI: redirectURI,
+        redirectURISuccess: redirectURISuccess
+    });
 });
 
 /*
@@ -142,25 +149,25 @@ app.get('/authorize', function(req, res) {
  *
  */
 function verifyRequestSignature(req, res, buf) {
-  var signature = req.headers["x-hub-signature"];
+    var signature = req.headers["x-hub-signature"];
 
-  if (!signature) {
-    // For testing, let's log an error. In production, you should throw an 
-    // error.
-    console.error("Couldn't validate the signature.");
-  } else {
-    var elements = signature.split('=');
-    var method = elements[0];
-    var signatureHash = elements[1];
+    if (!signature) {
+        // For testing, let's log an error. In production, you should throw an 
+        // error.
+        console.error("Couldn't validate the signature.");
+        } else {
+        var elements = signature.split('=');
+        var method = elements[0];
+        var signatureHash = elements[1];
 
-    var expectedHash = crypto.createHmac('sha1', APP_SECRET)
-                        .update(buf)
-                        .digest('hex');
+        var expectedHash = crypto.createHmac('sha1', APP_SECRET)
+                            .update(buf)
+                            .digest('hex');
 
-    if (signatureHash != expectedHash) {
-      throw new Error("Couldn't validate the request signature.");
+        if (signatureHash != expectedHash) {
+            throw new Error("Couldn't validate the request signature.");
+        }
     }
-  }
 }
 
 /*
@@ -172,24 +179,24 @@ function verifyRequestSignature(req, res, buf) {
  *
  */
 function receivedAuthentication(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfAuth = event.timestamp;
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
+    var timeOfAuth = event.timestamp;
 
-  // The 'ref' field is set in the 'Send to Messenger' plugin, in the 'data-ref'
-  // The developer can set this to an arbitrary value to associate the 
-  // authentication callback with the 'Send to Messenger' click event. This is
-  // a way to do account linking when the user clicks the 'Send to Messenger' 
-  // plugin.
-  var passThroughParam = event.optin.ref;
+    // The 'ref' field is set in the 'Send to Messenger' plugin, in the 'data-ref'
+    // The developer can set this to an arbitrary value to associate the 
+    // authentication callback with the 'Send to Messenger' click event. This is
+    // a way to do account linking when the user clicks the 'Send to Messenger' 
+    // plugin.
+    var passThroughParam = event.optin.ref;
 
-  console.log("Received authentication for user %d and page %d with pass " +
-    "through param '%s' at %d", senderID, recipientID, passThroughParam, 
-    timeOfAuth);
+    console.log("Received authentication for user %d and page %d with pass " +
+        "through param '%s' at %d", senderID, recipientID, passThroughParam, 
+        timeOfAuth);
 
-  // When an authentication is received, we'll send a message back to the sender
-  // to let them know it was successful.
-  callSendAPI(message_data.TextMessage(senderID, "Authentication successful"));
+    // When an authentication is received, we'll send a message back to the sender
+    // to let them know it was successful.
+    bot_api.callSendAPI(message_data.TextMessage(senderID, "Authentication successful"));
 }
 
 /*
@@ -211,8 +218,8 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  console.log('-------------- Recieved Message --------------')
-  console.log('-- Recieved Message from [%d] to [%d] at time %d --', senderID, recipientID, timeOfMessage);
+  console.log('[Recieved Message]')
+  console.log('-- Recieved Message from [%d] to [%d]', senderID, recipientID, timeOfMessage);
   // console.log("SenderID  and recipientID %d at Time: %d with message:", senderID, recipientID, timeOfMessage);
   console.log('-- Recieved message:',message.text ); 
   
@@ -224,7 +231,7 @@ function receivedMessage(event) {
   var metadata = message.metadata;
 
   // You may get a text or attachment but not both
-  var messageText = message.text;
+  var msg = message.text;
   var messageAttachments = message.attachments;
   var quickReply = message.quick_reply;
 
@@ -236,81 +243,138 @@ function receivedMessage(event) {
   } else if (quickReply) {
     var quickReplyPayload = quickReply.payload;
     console.log("Quick reply for message {%s} with payload {%s}",
-      messageId, quickReplyPayload);
+        messageId, quickReplyPayload);
 
-    callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
+    bot_api.callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
     return;
   }
 
-  if (messageText) {
-    // typing on
-    callSendAPI(message_data.TypingOn(senderID));
+    if (msg) {
+        // typing on
+        bot_api.callSendAPI(message_data.TypingOn(senderID));
 
-    // If we receive a text message, check to see if it matches any special
-    // keywords and send back the corresponding example. Otherwise, just echo
-    // the text we received.
-    switch (messageText) {
-      case 'image':
-        callSendAPI(message_data.ImageMessage(senderID));
-        break;
+        msg = msg.toLowerCase();
+        if (msg == 'me'){
+           
+        }
+        else if(msg.includes('help')){
+            // bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+        }
+        else if(msg == 'bot coins'){
+            // event.reply(['請選擇要查詢的幣種', message_objects.bot_coins]);
+        }
+        else if(msg == 'bot mine'){
+            // bot_API.callAPI('mine', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+        }
+        else if(msg == 'bot help'){
+            // bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+        }
+        else if(msg == 'bot btc'){
+            // bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+        }
+        else if(msg == 'p網/台銀幣價查詢' || msg =="bot polo"){
+            // event.reply(message_objects.bot_polo_twb);
+        }
+        else if(msg =='bot ethwallet'){
+            // event.reply(message_objects.bot_ethwallet);
+        }
+        else if(msg == 'bot miner'){
+            // event.reply(message_objects.bot_miner);
+        }
+        else if(msg == 'version'){
+            // event.reply('目前chatbot版本為' + require('../package.json').version);
+        }
+        else if(msg.substring(0,9) == 'bot polo '){
+            // bot polo
+            // var coin = msg.substring(9,msg.length);
+            // bot_API.callAPI('polo', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+        }
+        else if(msg.substring(0,4) == 'bot '){
+            // var coin = msg.substring(4,msg.length)
+            // // Altcoins
+            // for(var i = 0; i < ALTCOINS.length; ++i){					
+            //     if(coin ==  ALTCOINS[i].toLowerCase()){						
+            //         bot_API.callAPI('coin', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+            //         break;	
+            //     }
+            // }
+            // // TWB coins
+            // for(var i = 0; i < TWBCOINS.length; ++i){
+            //     if(coin ==  TWBCOINS[i].toLowerCase()){						
+            //         bot_API.callAPI('currency', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+            //         break;	
+            //     }
+            // }
+        }
+        else{
+            // event.reply('您好，請問您需要什麼服務？');
+        }
 
-      case 'gif':
-        callSendAPI(message_data.GifMessage(senderID));
-        break;
+        // If we receive a text message, check to see if it matches any special
+        // keywords and send back the corresponding example. Otherwise, just echo
+        // the text we received.
+        switch (msg) {
+            case 'image':
+                bot_api.callSendAPI(message_data.ImageMessage(senderID));
+            break;
 
-      case 'audio':
-        callSendAPI(message_data.AudioMessage(senderID));
-        break;
+            case 'gif':
+                bot_api.callSendAPI(message_data.GifMessage(senderID));
+            break;
 
-      case 'video':
-        callSendAPI(message_data.VideoMessage(senderID));
-        break;
+            case 'audio':
+                bot_api.callSendAPI(message_data.AudioMessage(senderID));
+            break;
 
-      case 'file':
-        callSendAPI(message_data.FileMessage(senderID));
-        break;
+            case 'video':
+                bot_api.callSendAPI(message_data.VideoMessage(senderID));
+            break;
 
-      case 'button':
-        callSendAPI(message_data.ButtonMessage(senderID));
-        break;
+            case 'file':
+                bot_api.callSendAPI(message_data.FileMessage(senderID));
+            break;
 
-      case 'generic':
-        callSendAPI(message_data.GenericMessage(senderID));
-        break;
+            case 'button':
+                bot_api.callSendAPI(message_data.ButtonMessage(senderID));
+            break;
 
-      case 'receipt':
-        callSendAPI(message_data.ReceiptMessage(senderID));
-        break;
+            case 'generic':
+                bot_api.callSendAPI(message_data.GenericMessage(senderID));
+            break;
 
-      case 'quick reply':
-        callSendAPI(message_data.QuickReply(senderID));
-        break;        
+            case 'receipt':
+                bot_api.callSendAPI(message_data.ReceiptMessage(senderID));
+            break;
 
-      case 'read receipt':
-        callSendAPI(message_data.ReadReceipt(senderID));
-        break;        
+            case 'quick reply':
+                bot_api.callSendAPI(message_data.QuickReply(senderID));
+            break;        
 
-      case 'typing on':
-        callSendAPI(message_data.TypingOn(senderID));
-        break;        
+            case 'read receipt':
+                bot_api.callSendAPI(message_data.ReadReceipt(senderID));
+            break;        
 
-      case 'typing off':
-        callSendAPI(message_data.TypingOff(senderID));
-        break;        
+            case 'typing on':
+                bot_api.callSendAPI(message_data.TypingOn(senderID));
+            break;        
 
-      case 'account linking':
-        callSendAPI(message_data.AccountLinking(senderID));
-        break;
+            case 'typing off':
+                bot_api.callSendAPI(message_data.TypingOff(senderID));
+            break;        
 
-      case 'list':
-        callSendAPI(message_data.ListMessage(senderID));
-        break;
+            case 'account linking':
+                bot_api.callSendAPI(message_data.AccountLinking(senderID));
+            break;
 
-      default:        
-        callSendAPI(message_data.TextMessage(senderID, messageText));
+            case 'list':
+                bot_api.callSendAPI(message_data.ListMessage(senderID));
+            break;
+
+            default:        
+                bot_api.callSendAPI(message_data.TextMessage(senderID, msg));
     }
   } else if (messageAttachments) {
-    callSendAPI(message_data.TextMessage(senderID, "Message with attachment received"));
+      bot_api.callSendAPI(message_data.TextMessage(senderID, "Message with attachment received"));
   }
 }
 
@@ -323,12 +387,12 @@ function receivedMessage(event) {
  *
  */
 function receivedDeliveryConfirmation(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var delivery = event.delivery;
-  var messageIDs = delivery.mids;
-  var watermark = delivery.watermark;
-  var sequenceNumber = delivery.seq;
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
+    var delivery = event.delivery;
+    var messageIDs = delivery.mids;
+    var watermark = delivery.watermark;
+    var sequenceNumber = delivery.seq;
 
   // if (messageIDs) {
   //   messageIDs.forEach(function(messageID) {
@@ -349,24 +413,27 @@ function receivedDeliveryConfirmation(event) {
  * 
  */
 function receivedPostback(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfPostback = event.timestamp;
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
+    var timeOfPostback = event.timestamp;
 
-  // The 'payload' param is a developer-defined field which is set in a postback 
-  // button for Structured Messages. 
-  var payload = event.postback.payload;
+    // The 'payload' param is a developer-defined field which is set in a postback 
+    // button for Structured Messages. 
+    var payload = event.postback.payload;
+    
   
 
-  console.log("Received [POSTBACK] for user %d and page %d with payload '%s' " + 
-    "at %d", senderID, recipientID, payload, timeOfPostback);
+    console.log("Received  **POSTBACK** for user %d with payload '%s' ", senderID,  payload);
+    if(payload == 'bot_coins_PAYLOAD'){
+        bot_api.callSendAPI(message_data.bot_coins(senderID));
+    }
 
-  // When a postback is called, we'll send a message back to the sender to 
-  // let them know it was successful
-  if(payload == 'GET_STARTED_PAYLOAD'){
-    callSendAPI(message_data.TextMessage(senderID, "您好，請問您需要什麼服務？"));
-  }else{
-    callSendAPI(message_data.TextMessage(senderID, "Postback called"));
+    // When a postback is called, we'll send a message back to the sender to 
+    // let them know it was successful
+    if(payload == 'GET_STARTED_PAYLOAD'){
+        bot_api.callSendAPI(message_data.TextMessage(senderID, "您好，請問您需要什麼服務？"));
+    }else{
+        bot_api.callSendAPI(message_data.TextMessage(senderID, "Postback called"));
   }
   
 }
@@ -379,12 +446,12 @@ function receivedPostback(event) {
  * 
  */
 function receivedMessageRead(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
 
-  // All messages before watermark (a timestamp) or sequence have been seen.
-  var watermark = event.read.watermark;
-  var sequenceNumber = event.read.seq;
+    // All messages before watermark (a timestamp) or sequence have been seen.
+    var watermark = event.read.watermark;
+    var sequenceNumber = event.read.seq;
 
   // console.log("Received message read event for watermark {%d} and sequence " +
   //   "number %d", watermark, sequenceNumber);
@@ -411,41 +478,12 @@ function receivedAccountLink(event) {
 
 
 
-/*
- * Call the Send API. The message data goes in the body. If successful, we'll 
- * get the message id in a response 
- *
- */
-function callSendAPI(messageData) {
-  request({
-    uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: PAGE_ACCESS_TOKEN },
-    method: 'POST',
-    json: messageData
-
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      if (messageId) {
-        console.log("Successfully sent message to recipient [%s]", 
-           recipientId);
-      } else {
-      console.log("Successfully called Send API for recipient [%s]", 
-        recipientId);
-      }
-    } else {
-      console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
-    }
-  });  
-}
 
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid 
 // certificate authority.
 app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+    console.log('Node app is running on port', app.get('port'));
 });
 
 

@@ -1,13 +1,101 @@
-const config = require('config')
+const config = require('config');
 const SERVER_URL = (process.env.SERVER_URL) ?
   (process.env.SERVER_URL) :
   config.get('serverURL');
+
+function bot_coins(recipientId) {
+  return {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "請選擇要查詢的幣種",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"BTC",
+          "payload":"bot_coin_btc",
+          "image_url": SERVER_URL + "/assets/BTC.png"
+        },
+        {
+          "content_type":"text",
+          "title":"ETH",
+          "payload":"bot_coin_eth"
+        },
+        {
+          "content_type":"text",
+          "title":"ZEC",
+          "payload":"bot_coin_zec"
+        },
+        {
+          "content_type":"text",
+          "title":"MC",
+          "payload":"bot_coin_mc"
+        },
+        {
+          "content_type":"text",
+          "title":"LTC",
+          "payload":"bot_coin_ltc"
+        }, 
+        {
+          "content_type":"text",
+          "title":"ETC",
+          "payload":"bot_coin_etc"
+        },
+        {
+          "content_type":"text",
+          "title":"EXP",
+          "payload":"bot_coin_exp"
+        },
+        {
+          "content_type":"text",
+          "title":"XMR",
+          "payload":"bot_coin_xmr"
+        },
+        {
+          "content_type":"text",
+          "title":"XRP",
+          "payload":"bot_coin_xrp"
+        }
+      ]
+    }
+  };  
+}
+
+exports.bot_coins = bot_coins
+
+
+exports.AccountLinking = AccountLinking
+exports.AudioMessage = AudioMessage
+exports.ButtonMessage = ButtonMessage
+exports.ImageMessage = ImageMessage
+exports.VideoMessage = VideoMessage
+exports.FileMessage
+exports.GenericMessage = GenericMessage
+exports.GifMessage = GifMessage
+exports.QuickReply = QuickReply
+exports.TypingOff = TypingOff
+exports.TypingOn = TypingOn
+exports.TextMessage = TextMessage
+exports.ReadReceipt = ReadReceipt
+exports.ReceiptMessage = ReceiptMessage
+exports.ListMessage = ListMessage
+
+
+/*
+ *
+ * 
+ *  Template Message Objects
+ * 
+ * 
+ */
+
 /*
  * Send an image using the Send API.
  *
  */
 function ImageMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -21,7 +109,7 @@ function ImageMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -29,7 +117,7 @@ function ImageMessage(recipientId) {
  *
  */
 function GifMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -43,7 +131,7 @@ function GifMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -51,7 +139,7 @@ function GifMessage(recipientId) {
  *
  */
 function AudioMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -65,7 +153,7 @@ function AudioMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -73,7 +161,7 @@ function AudioMessage(recipientId) {
  *
  */
 function VideoMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -87,7 +175,7 @@ function VideoMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -95,7 +183,7 @@ function VideoMessage(recipientId) {
  *
  */
 function FileMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -109,7 +197,7 @@ function FileMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -117,7 +205,7 @@ function FileMessage(recipientId) {
  *
  */
 function TextMessage(recipientId, messageText) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -128,7 +216,7 @@ function TextMessage(recipientId, messageText) {
   };
 //   console.log(messageData);
 
-  return messageData;
+  
 }
 
 /*
@@ -136,7 +224,7 @@ function TextMessage(recipientId, messageText) {
  *
  */
 function ButtonMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -164,7 +252,7 @@ function ButtonMessage(recipientId) {
     }
   };  
 
-  return messageData;
+  
 }
 
 /*
@@ -172,7 +260,7 @@ function ButtonMessage(recipientId) {
  *
  */
 function GenericMessage(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -215,7 +303,7 @@ function GenericMessage(recipientId) {
     }
   };  
 
-  return messageData;
+  
 }
 
 /*
@@ -226,7 +314,7 @@ function ReceiptMessage(recipientId) {
   // Generate a random receipt ID as the API requires a unique ID
   var receiptId = "order" + Math.floor(Math.random()*1000);
 
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -281,7 +369,7 @@ function ReceiptMessage(recipientId) {
     }
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -289,7 +377,7 @@ function ReceiptMessage(recipientId) {
  *
  */
 function QuickReply(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -323,9 +411,7 @@ function QuickReply(recipientId) {
         }
       ]
     }
-  };
-
-  return messageData;
+  };  
 }
 
 /*
@@ -333,16 +419,16 @@ function QuickReply(recipientId) {
  *
  */
 function ReadReceipt(recipientId) {
-  console.log("Sending a read receipt to mark message as seen");
+  // console.log("Sending a read receipt to mark message as seen");
 
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
     sender_action: "mark_seen"
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -350,16 +436,16 @@ function ReadReceipt(recipientId) {
  *
  */
 function TypingOn(recipientId) {
-  console.log("Turning typing indicator on");
+  // console.log("Turning typing indicator on");
 
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
     sender_action: "typing_on"
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -369,14 +455,14 @@ function TypingOn(recipientId) {
 function TypingOff(recipientId) {
   console.log("Turning typing indicator off");
 
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
     sender_action: "typing_off"
   };
 
-  return messageData;
+  
 }
 
 /*
@@ -384,7 +470,7 @@ function TypingOff(recipientId) {
  *
  */
 function AccountLinking(recipientId) {
-  var messageData = {
+  return {
     recipient: {
       id: recipientId
     },
@@ -403,11 +489,11 @@ function AccountLinking(recipientId) {
     }
   };  
 
-  return messageData;
+  
 }
 
 function ListMessage(recipientId){
-    var messageData = {
+    return {
         "recipient":{
             "id": recipientId
         }, "message": {
@@ -516,22 +602,7 @@ function ListMessage(recipientId){
             }
         }
    };
-    return messageData;  
+      
 
 }
 
-exports.AccountLinking = AccountLinking
-exports.AudioMessage = AudioMessage
-exports.ButtonMessage = ButtonMessage
-exports.ImageMessage = ImageMessage
-exports.VideoMessage = VideoMessage
-exports.FileMessage
-exports.GenericMessage = GenericMessage
-exports.GifMessage = GifMessage
-exports.QuickReply = QuickReply
-exports.TypingOff = TypingOff
-exports.TypingOn = TypingOn
-exports.TextMessage = TextMessage
-exports.ReadReceipt = ReadReceipt
-exports.ReceiptMessage = ReceiptMessage
-exports.ListMessage = ListMessage

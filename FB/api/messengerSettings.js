@@ -52,27 +52,49 @@ var persistentMenuOptions = {
             "type":"nested",
             "call_to_actions":[
               {
-                "title":"Pay Bill",
+                "title":"BTC / ALTCOIN 查詢",
                 "type":"postback",
-                "payload":"PAYBILL_PAYLOAD"
+                "payload":"bot_coins_PAYLOAD"
               },
               {
-                "title":"History",
+                "title":"Poloniex 查詢",
                 "type":"postback",
-                "payload":"HISTORY_PAYLOAD"
+                "payload":"bot_polo_PAYLOAD"
               },
               {
-                "title":"Contact Info",
+                "title":"台銀幣價查詢",
                 "type":"postback",
-                "payload":"CONTACT_INFO_PAYLOAD"
+                "payload":"bot_twb_PAYLOAD"
               }
             ]
           },
           {
             "title":"挖礦收益",
             "type":"postback",
-            "payload":"PAYBILL_PAYLOAD"          
+            "payload":"bot_mine_PAYLOAD"          
+          },          
+          {
+            "title":"錢包查詢 / 其他",
+            "type":"nested",
+            "call_to_actions":[
+              {
+                "title":"ETH錢包查詢",
+                "type":"postback",
+                "payload":"bot_ethwallet_PAYLOAD"
+              },
+              {
+                "title":"MC礦工查詢",
+                "type":"postback",
+                "payload":"bot_miner_PAYLOAD"
+              },
+              {
+                "title":"HELP",
+                "type":"postback",
+                "payload":"help_PAYLOAD"
+              }
+            ]
           }
+          
         ]
       },
       {
