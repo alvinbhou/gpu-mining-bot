@@ -420,21 +420,22 @@ function receivedPostback(event) {
     // The 'payload' param is a developer-defined field which is set in a postback 
     // button for Structured Messages. 
     var payload = event.postback.payload;
-    
-  
+ 
 
     console.log("Received  **POSTBACK** for user %d with payload '%s' ", senderID,  payload);
-    if(payload == 'bot_coins_PAYLOAD'){
-        bot_api.callSendAPI(message_data.bot_coins(senderID));
-    }
+    
 
     // When a postback is called, we'll send a message back to the sender to 
     // let them know it was successful
     if(payload == 'GET_STARTED_PAYLOAD'){
         bot_api.callSendAPI(message_data.TextMessage(senderID, "您好，請問您需要什麼服務？"));
-    }else{
-        bot_api.callSendAPI(message_data.TextMessage(senderID, "Postback called"));
-  }
+    }else if(payload == 'bot_coins_PAYLOAD'){
+        bot_api.callSendAPI(message_data.bot_coins(senderID));
+        
+    }
+    else{
+        bot_api.callSendAPI(message_data.TextMessage(senderID, payload + " Postback called"));
+    }
   
 }
 

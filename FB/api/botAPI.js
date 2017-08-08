@@ -42,21 +42,21 @@ function event_callback(event, postback_data){
     
 }
 
-function callAPI(target, data, event){
-    var options = {
-        method: 'POST',
-        url: 'http://150.95.147.150:3000/' + target,
-        json: data
-    };
-    function callback(error, response, body) {
-        // console.log(response.statusCode);
-        if (!error && response.statusCode == 200) {
-          event.reply(body['ans']);
-        }
-    }   
-    request(options, callback); 
+// function callAPI(target, data, event){
+//     var options = {
+//         method: 'POST',
+//         url: 'http://150.95.147.150:3000/' + target,
+//         json: data
+//     };
+//     function callback(error, response, body) {
+//         // console.log(response.statusCode);
+//         if (!error && response.statusCode == 200) {
+//           event.reply(body['ans']);
+//         }
+//     }   
+//     request(options, callback); 
     
-}*/
+// }*/
 
 /*
  * Call the Send API. The message data goes in the body. If successful, we'll 

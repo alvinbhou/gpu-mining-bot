@@ -15,47 +15,56 @@ function bot_coins(recipientId) {
           "content_type":"text",
           "title":"BTC",
           "payload":"bot_coin_btc",
-          "image_url": SERVER_URL + "/assets/BTC.png"
+          "image_url": "https://i.imgur.com/PXxMF79.png"
         },
         {
           "content_type":"text",
           "title":"ETH",
-          "payload":"bot_coin_eth"
+          "payload":"bot_coin_eth",
+          "image_url": "https://i.imgur.com/sro5Ro3.png"
         },
         {
           "content_type":"text",
           "title":"ZEC",
-          "payload":"bot_coin_zec"
+          "payload":"bot_coin_zec",
+          "image_url": "https://i.imgur.com/ACsoHNv.png"
         },
         {
           "content_type":"text",
           "title":"MC",
-          "payload":"bot_coin_mc"
+          "payload":"bot_coin_mc",
+          "image_url": "https://i.imgur.com/a4F8Y1n.png"
         },
         {
           "content_type":"text",
           "title":"LTC",
-          "payload":"bot_coin_ltc"
+          "payload":"bot_coin_ltc",
+          "image_url": "https://i.imgur.com/IJj18do.png"
         }, 
         {
           "content_type":"text",
           "title":"ETC",
-          "payload":"bot_coin_etc"
+          "payload":"bot_coin_etc",
+          "image_url": "https://i.imgur.com/xigNgWh.png"
         },
         {
           "content_type":"text",
           "title":"EXP",
-          "payload":"bot_coin_exp"
+          "payload":"bot_coin_exp",
+          "image_url": "https://i.imgur.com/gO2C25u.png"
         },
         {
           "content_type":"text",
           "title":"XMR",
-          "payload":"bot_coin_xmr"
+          "payload":"bot_coin_xmr",
+           "image_url": "https://i.imgur.com/LRrbIz7.png"
+          
         },
         {
           "content_type":"text",
           "title":"XRP",
-          "payload":"bot_coin_xrp"
+          "payload":"bot_coin_xrp",
+          "image_url": "https://i.imgur.com/mksbGzl.png"
         }
       ]
     }
