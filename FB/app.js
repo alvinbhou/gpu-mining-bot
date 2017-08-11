@@ -10,8 +10,9 @@ const
     fs = require('fs'),
     http = require('http'),
     message_data = require('./models/messageData'),
-    messenger_settings = require('./api/messengerSettings'),
-    bot_api = require('./api/botAPI');
+    messenger_settings = require('./api/messengerAPI'),
+    bot_api = require('./api/botAPI'),
+    parse_helper = require('./helpers/parse');
 
 const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP'];
 const TWBCOINS = ['USD','CNY', 'HKD','JPY', 'GBP', 'AUD', 'CAD' , 'SGD', 'CHF', 'ZAR', 'SEK', 'NZD', 'THB', 'PHP', 'IDR', 'EUR', 'KRW', 'VND', 'MYR']
@@ -244,6 +245,10 @@ function receivedMessage(event) {
     var quickReplyPayload = quickReply.payload;
     console.log("Quick reply for message {%s} with payload {%s}",
         messageId, quickReplyPayload);
+    var postParas =  parse_helper.getPOSTPara(quickReplyPayload, senderID);
+    console.log(postParas[0], postParas[1]);
+    bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+
 
     bot_api.callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
     return;
