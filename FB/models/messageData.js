@@ -14,7 +14,7 @@ function bot_coins(recipientId) {
         {
           "content_type":"text",
           "title":"BTC",
-          "payload":"bot_coin_btc",
+          "payload":"bot_btc",
           "image_url": "https://i.imgur.com/PXxMF79.png"
         },
         {
@@ -71,7 +71,145 @@ function bot_coins(recipientId) {
   };  
 }
 
+function bot_polo(recipientId) {
+  return {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "[Poloniex / Bittrex]\n欲查詢其他幣種，請輸入 bot polo {coin}\n [範例: bot polo dash]",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"BTC",
+          "payload":"bot_polo_btc",
+          "image_url": "https://i.imgur.com/PXxMF79.png"
+        },
+        {
+          "content_type":"text",
+          "title":"ETH",
+          "payload":"bot_polo_eth",
+          "image_url": "https://i.imgur.com/sro5Ro3.png"
+        },
+        {
+          "content_type":"text",
+          "title":"ZEC",
+          "payload":"bot_polo_zec",
+          "image_url": "https://i.imgur.com/ACsoHNv.png"
+        },
+        {
+          "content_type":"text",
+          "title":"MC",
+          "payload":"bot_polo_mc",
+          "image_url": "https://i.imgur.com/a4F8Y1n.png"
+        },
+        {
+          "content_type":"text",
+          "title":"LTC",
+          "payload":"bot_polo_ltc",
+          "image_url": "https://i.imgur.com/IJj18do.png"
+        }, 
+        {
+          "content_type":"text",
+          "title":"ETC",
+          "payload":"bot_polo_etc",
+          "image_url": "https://i.imgur.com/xigNgWh.png"
+        },
+        {
+          "content_type":"text",
+          "title":"EXP",
+          "payload":"bot_polo_exp",
+          "image_url": "https://i.imgur.com/gO2C25u.png"
+        },
+        {
+          "content_type":"text",
+          "title":"XMR",
+          "payload":"bot_polo_xmr",
+           "image_url": "https://i.imgur.com/LRrbIz7.png"
+          
+        },
+        {
+          "content_type":"text",
+          "title":"XRP",
+          "payload":"bot_polo_xrp",
+          "image_url": "https://i.imgur.com/mksbGzl.png"
+        }
+      ]
+    }
+  };  
+}
+
+function bot_twb(recipientId) {
+  return {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "P/B網幣價查詢\n欲查詢其他幣種，請輸入 bot polo {coin} [範例: bot polo dash]",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"BTC",
+          "payload":"bot_polo_btc",
+          "image_url": "https://i.imgur.com/PXxMF79.png"
+        },
+        {
+          "content_type":"text",
+          "title":"ETH",
+          "payload":"bot_polo_eth",
+          "image_url": "https://i.imgur.com/sro5Ro3.png"
+        },
+        {
+          "content_type":"text",
+          "title":"ZEC",
+          "payload":"bot_polo_zec",
+          "image_url": "https://i.imgur.com/ACsoHNv.png"
+        },
+        {
+          "content_type":"text",
+          "title":"MC",
+          "payload":"bot_polo_mc",
+          "image_url": "https://i.imgur.com/a4F8Y1n.png"
+        },
+        {
+          "content_type":"text",
+          "title":"LTC",
+          "payload":"bot_polo_ltc",
+          "image_url": "https://i.imgur.com/IJj18do.png"
+        }, 
+        {
+          "content_type":"text",
+          "title":"ETC",
+          "payload":"bot_polo_etc",
+          "image_url": "https://i.imgur.com/xigNgWh.png"
+        },
+        {
+          "content_type":"text",
+          "title":"EXP",
+          "payload":"bot_polo_exp",
+          "image_url": "https://i.imgur.com/gO2C25u.png"
+        },
+        {
+          "content_type":"text",
+          "title":"XMR",
+          "payload":"bot_polo_xmr",
+           "image_url": "https://i.imgur.com/LRrbIz7.png"
+          
+        },
+        {
+          "content_type":"text",
+          "title":"XRP",
+          "payload":"bot_polo_xrp",
+          "image_url": "https://i.imgur.com/mksbGzl.png"
+        }
+      ]
+    }
+  };  
+}
+
 exports.bot_coins = bot_coins
+exports.bot_polo = bot_polo
+exports.bot_twb = bot_twb
 
 
 exports.AccountLinking = AccountLinking
@@ -89,6 +227,7 @@ exports.TextMessage = TextMessage
 exports.ReadReceipt = ReadReceipt
 exports.ReceiptMessage = ReceiptMessage
 exports.ListMessage = ListMessage
+exports.ListTemplate = ListTemplate
 
 
 /*
@@ -219,7 +358,7 @@ function TextMessage(recipientId, messageText) {
       id: recipientId
     },
     message: {
-      text: '[Reply]' + messageText,
+      text:  messageText,
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };
@@ -599,6 +738,77 @@ function ListMessage(recipientId){
                                 }
                             ]                
                         }
+                    ],
+                    "buttons": [
+                        {
+                            "title": "View More",
+                            "type": "postback",
+                            "payload": "payload"                        
+                        }
+                    ]  
+                }
+            }
+        }
+   };
+      
+
+}
+
+function ListTemplate(recipientId){
+    return {
+        "recipient":{
+            "id": recipientId
+        }, "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "list",
+                    "elements": [
+                        {
+                            "title": "Classic White T-Shirt",
+                            "image_url":  "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
+                            "subtitle": "BTC",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        },
+                         {
+                            "title": "Classic Blue T-Shirt",
+                            "image_url":  SERVER_URL + "/assets/rift.png",
+                            "subtitle": "100% Cotton, 200% Comfortable",
+                            "default_action": {
+                                "type": "web_url",
+                                "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                "messenger_extensions": true,
+                                "webview_height_ratio": "tall",
+                                "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"
+                            },
+                            "buttons": [
+                                {
+                                    "title": "Buy",
+                                    "type": "web_url",
+                                    "url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png",
+                                    "messenger_extensions": true,
+                                    "webview_height_ratio": "tall",
+                                    "fallback_url": "https://raw.githubusercontent.com/shphrd/crypto-icons/master/color-icons/png/%401x/Bitcoin.png"                        
+                                }
+                            ]                
+                        },
+                        
                     ],
                     "buttons": [
                         {

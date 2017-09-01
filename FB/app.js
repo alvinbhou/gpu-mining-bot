@@ -220,7 +220,7 @@ function receivedMessage(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
   console.log('[Recieved Message]')
-  console.log('-- Recieved Message from [%d] to [%d]', senderID, recipientID, timeOfMessage);
+  console.log('-- Recieved Message from [%d] to [%d]', senderID, recipientID);
   // console.log("SenderID  and recipientID %d at Time: %d with message:", senderID, recipientID, timeOfMessage);
   console.log('-- Recieved message:',message.text ); 
   
@@ -246,11 +246,16 @@ function receivedMessage(event) {
     console.log("Quick reply for message {%s} with payload {%s}",
         messageId, quickReplyPayload);
     var postParas =  parse_helper.getPOSTPara(quickReplyPayload, senderID);
-    console.log(postParas[0], postParas[1]);
-    bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+    console.log(postParas);
+    if(postParas){
+        console.log('hi');
+        bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+    }
+ 
+    
 
 
-    bot_api.callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
+    // bot_api.callSendAPI(message_data.TextMessage(senderID, "Quick reply tapped"));
     return;
   }
 
@@ -372,7 +377,7 @@ function receivedMessage(event) {
             break;
 
             case 'list':
-                bot_api.callSendAPI(message_data.ListMessage(senderID));
+                bot_api.callSendAPI(message_data.ListTemplate(senderID));
             break;
 
             default:        
@@ -432,12 +437,14 @@ function receivedPostback(event) {
 
     // When a postback is called, we'll send a message back to the sender to 
     // let them know it was successful
-    if(payload == 'GET_STARTED_PAYLOAD'){
-        bot_api.callSendAPI(message_data.TextMessage(senderID, "您好，請問您需要什麼服務？"));
-    }else if(payload == 'bot_coins_PAYLOAD'){
-        bot_api.callSendAPI(message_data.bot_coins(senderID));
-        
-    }
+
+    // If includes '_PAYLOAD',  this postback payload should reply self-defined actions
+    // or menu options (not API involded)
+    if(payload.includes('_PAYLOAD')){
+        var msg = parse_helper.parsePayload(payload, senderID);
+        bot_api.callSendAPI(msg);
+    }   
+    // callbacks to trigger API to reply
     else{
         bot_api.callSendAPI(message_data.TextMessage(senderID, payload + " Postback called"));
     }

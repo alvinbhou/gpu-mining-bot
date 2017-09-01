@@ -369,6 +369,7 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
 
 def callAPI(name, data):
     r = requests.post('http://150.95.147.150:3000/' + name, data = data)
+    print(r.content.decode('utf-8'))
     reply_obj = json.loads(r.content.decode('utf-8'))
     return reply_obj['ans']  
 

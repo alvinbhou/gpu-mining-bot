@@ -1,4 +1,5 @@
 const request = require('request');
+const message_data = require('../models/messageData');
 const config = require('config');
 const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
 var callback_state = {
@@ -79,9 +80,10 @@ function callBot2SendAPI(target, data) {
         json: data
     };
     function callback(error, response, body) {
-        // console.log(response.statusCode);
+        console.log(response.statusCode);
         if (!error && response.statusCode == 200) {
           console.log(body['ans']);
+          callSendAPI(message_data.TextMessage(data.callerid, body['ans']));
           return body['ans'];
         }
     }   

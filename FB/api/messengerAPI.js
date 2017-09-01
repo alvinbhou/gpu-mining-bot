@@ -29,7 +29,8 @@ var whiteListOptions = {
    { whitelisted_domains: 
       [ 
         'https://raw.githubusercontent.com/',
-      'https://i.imgur.com/' ] },
+      'https://i.imgur.com/',
+      'https://themerkle.com/' ] },
   json: true 
 };
 
@@ -70,8 +71,14 @@ var persistentMenuOptions = {
           },
           {
             "title":"挖礦收益",
-            "type":"postback",
-            "payload":"bot_mine_PAYLOAD"          
+            "type":"nested",
+            "call_to_actions":[
+              {
+                "title":"收益總覽",
+                "type":"postback",
+                "payload":"bot_mine"
+              }
+            ]        
           },          
           {
             "title":"錢包查詢 / 其他",
@@ -90,7 +97,7 @@ var persistentMenuOptions = {
               {
                 "title":"HELP",
                 "type":"postback",
-                "payload":"help_PAYLOAD"
+                "payload":"bot_help"
               }
             ]
           }
