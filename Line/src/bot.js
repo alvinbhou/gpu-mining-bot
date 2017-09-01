@@ -31,7 +31,7 @@ var BOT_STATE = {
 
 bot.on('message', function (event) {
 	var chat_id = event.source.userId;
-	console.log(chat_id);
+	// console.log(chat_id);
 	switch (event.message.type) {
         case 'text':           
 			if(BOT_STATE['eth_wallet_subsribe_state']){
@@ -92,6 +92,11 @@ bot.on('message', function (event) {
 				// bot polo
 				var coin = msg.substring(9,msg.length);
 				bot_API.callAPI('polo', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg.substring(0,9) == 'bot mine '){
+				// bot mine
+				var coin = msg.substring(9,msg.length);
+				bot_API.callAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 			}
 			else if(msg.substring(0,4) == 'bot '){
 				var coin = msg.substring(4,msg.length)

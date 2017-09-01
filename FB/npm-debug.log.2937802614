@@ -1,0 +1,145 @@
+#挖礦收益
+/mine (no coin)
+request: {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response: 
+{ 
+    'ans': 'responseString.....收益字串',
+    'data': {
+        'profit':[
+            {
+             'coin': 'eth',
+             'hashrate': '30',
+             'timestamp': '2017/08/22/ 14:30',
+             'diff': '4.1T',
+             'earnperday': '100',
+             'usdperday': '1',
+             'ntdperday': '30'
+            },{
+            {   
+              'coin': 'mc',
+                ...
+                ...
+                ...
+            },
+          	{
+               'coin': 'zec',
+                ...
+                ...
+                ...
+            }
+        ]
+    }
+}
+
+
+/mine (with coin)
+request: {'coin': coin, 'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response: 
+{ 
+    'ans': 'responseString.....收益字串',
+    'data': {
+        'profit':[
+            {
+             'coin': 'eth',
+             'hashrate': '30',
+             'timestamp': '2017/08/22/ 14:30',
+             'diff': '4.1T',
+             'earnperday': '100',
+             'usdperday': '1',
+             'ntdperday': '30'
+            }        
+        ]
+    }
+}
+
+
+
+/mine (with coin and hash rate)
+request: {'coin': coin, 'hashrate': 30, 'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response: 
+{ 
+    'ans': 'responseString.....收益字串',
+    'data': {
+        'profit':[
+            {
+             'coin': 'eth',
+             'hashrate': '30',
+             'timestamp': '2017/08/22/ 14:30',
+             'diff': '4.1T',
+             'earnperday': '100',
+             'usdperday': '1',
+             'ntdperday': '30'
+            }        
+        ]
+    }
+}
+
+#　MC 錢包新增地址
+/miner/subscribe
+request: {'coin': 'mc', 'address': '0xsdf...','usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response:
+{     
+    'ans': '新增成功/失敗/地址錯誤...',
+    'data': {
+        'success': true
+    }
+}
+
+# MC get已新增的地址 (不知道有沒有需要，看地址要存在我這端 或是你那邊，每次user要查的時候，再去跟API用callerid mapping拿)
+/miner/getAddress
+request: {'coin': 'mc',  'channel': CHANNEL, 'callerid': chat_id}
+response:
+{    
+    'ans': '新增成功/失敗/地址錯誤...',
+    'data': {
+        'success': true,
+        'address': '0xsdf.....'
+    }
+}
+
+#　MC 礦工查看
+/miner/status
+request: {'coin': 'mc', 'address': '0xsdf...','usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response:
+{ 
+    'ans': '礦工資訊.....',
+    'data': {
+        'success': true,
+    }
+}
+(未來zen池也可以比照辦理 把 'mc' 改成 'zen' 就好?)
+
+# ETH 錢包新增地址
+/miner/subscribe
+request: {'coin': 'eth', 'address': '0xsdf...','usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response:
+{     
+    'ans': '新增成功/失敗/地址錯誤...',
+    'data': {
+        'success': true
+    }
+}
+
+
+# ETH get已新增的地址 (需求評估同上)
+/miner/getAddress
+request: {'coin': 'eth', 'channel': CHANNEL, 'callerid': chat_id}
+response:
+{    
+    'ans': '新增成功/失敗/地址錯誤...',
+    'data': {
+        'success': true,
+        'address': '0xsdf.....'
+    }
+}
+
+#　ETH 礦工查看
+/miner/status
+request: {'coin': 'eth', 'address': '0xsdf...','usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}
+response:
+{ 
+    'ans': '礦工資訊.....',
+    'data': {
+        'success': true,
+    }
+}
