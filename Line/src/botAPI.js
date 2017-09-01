@@ -45,7 +45,7 @@ function callAPI(target, data, event){
     function callback(error, response, body) {
         console.log(response.statusCode);
         if (!error && response.statusCode == 200) {
-            console.log('Reply ' + body['ans']);
+            console.log(body);
           event.reply(body['ans']);
         }
     }   
