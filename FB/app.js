@@ -29,7 +29,7 @@ app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 
 // init messenger_settings
-// messenger_settings.init();
+messenger_settings.init();
 
 /*
  * Be sure to setup your config values before running this code. You can 
@@ -248,7 +248,7 @@ function receivedMessage(event) {
     var postParas =  parse_helper.getPOSTPara(quickReplyPayload, senderID);
     console.log(postParas);
     if(postParas){
-        console.log('hi');
+        // console.log('hi');
         bot_api.callBot2SendAPI(postParas[0],postParas[1]);
     }
  
@@ -445,6 +445,14 @@ function receivedPostback(event) {
         bot_api.callSendAPI(msg);
     }   
     // callbacks to trigger API to reply
+    else if(payload.includes('_APICALL')){
+        var postParas =  parse_helper.getPOSTPara(payload.replace('_APICALL', ''), senderID);
+        console.log(postParas);
+        if(postParas){           
+            bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+        }
+        
+    }
     else{
         bot_api.callSendAPI(message_data.TextMessage(senderID, payload + " Postback called"));
     }

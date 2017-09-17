@@ -76,7 +76,7 @@ var persistentMenuOptions = {
               {
                 "title":"收益總覽",
                 "type":"postback",
-                "payload":"bot_mine"
+                "payload":"bot_mine_all_APICALL"
               }
             ]        
           },          

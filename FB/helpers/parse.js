@@ -16,6 +16,9 @@ function getPOSTPara(payload, senderID) {
         var coin = payload.substring(8,payload.length);
         return ['currency', {'coin': coin,'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
     }
+    else if(payload == 'bot_mine_all'){
+        return ['mine', {'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
+    }
 
 }
 
@@ -31,6 +34,11 @@ function parsePayload(payload, senderID){
     else if(cmd == 'bot_polo'){
         return message_data.bot_polo(senderID);
     }
+    else if(cmd == 'bot_twb'){
+        return message_data.bot_twb(senderID);
+    }
+    
+    
 
 
 }

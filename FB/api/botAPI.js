@@ -83,6 +83,9 @@ function callBot2SendAPI(target, data) {
         console.log(response.statusCode);
         if (!error && response.statusCode == 200) {
           console.log(body['ans']);
+          if(body['ans'].length >= 640){
+              body['ans'] = body['ans'].substring(0,635) + '...';
+          }
           callSendAPI(message_data.TextMessage(data.callerid, body['ans']));
           return body['ans'];
         }

@@ -245,7 +245,7 @@ var bot_mine = {
 
 
 
-exports.HELP_MESSAGE = HELP_MESSAGE
+// exports.HELP_MESSAGE = HELP_MESSAGE
 exports.bot_coins = bot_coins
 exports.bot_polo_twb = bot_polo_twb
 exports.bot_ethwallet = bot_ethwallet

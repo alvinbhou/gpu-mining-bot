@@ -56,6 +56,8 @@ bot.on('message', function (event) {
 			}
 
 			var msg = event.message.text.toLowerCase();
+			// replace speicial characters
+			msg = msg.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
 			if (msg == 'me'){
 				event.source.profile().then(function (profile) {
 					return event.reply('Hello ' + profile.displayName + ' ' + profile.userId);
@@ -76,7 +78,7 @@ bot.on('message', function (event) {
 			else if(msg == 'bot btc'){
 				bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 			}
-			else if(msg == 'p網/台銀幣價查詢' || msg =="bot polo"){
+			else if(msg == 'p網台銀幣價查詢' || msg =="bot polo"){
 				event.reply(message_objects.bot_polo_twb);
 			}
 			else if(msg =='bot ethwallet'){

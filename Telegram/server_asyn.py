@@ -149,6 +149,7 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
 
         user = getUser(chat_id)
         msg = msg['text']
+        msg = ''.join(e for e in msg if e.isalnum() or e==' ')
         print(chat_id, msg) 
         await self._cancel_last()
         user.getState(msg)      
@@ -196,7 +197,11 @@ class GPUMiningBot(telepot.aio.helper.ChatHandler):
             reply = callAPI('polo', {'coin': msg.lower()[9:], 'usersay': msg, 'channel': 'tg', 'callerid': chat_id })           
             await self.sender.sendMessage(reply)
             return
-
+        # mine coins
+        if(msg.lower()[0:9] == 'bot mine '):            
+            reply = callAPI('mine', {'coin': msg.lower()[9:], 'usersay': msg, 'channel': 'tg', 'callerid': chat_id })           
+            await self.sender.sendMessage(reply)
+            return
         # # # # # ## # # # # # # # # # # #
         # Query with Callback functions  #
         # bot coin  (alt)                #

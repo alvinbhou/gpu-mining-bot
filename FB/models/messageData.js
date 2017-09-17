@@ -145,62 +145,37 @@ function bot_twb(recipientId) {
       id: recipientId
     },
     message: {
-      text: "P/B網幣價查詢\n欲查詢其他幣種，請輸入 bot polo {coin} [範例: bot polo dash]",
+      text: "台銀幣價查詢\n欲查詢其他幣種，請輸入 bot {coin}\n [範例: bot HKD]",
       quick_replies: [
         {
           "content_type":"text",
-          "title":"BTC",
-          "payload":"bot_polo_btc",
-          "image_url": "https://i.imgur.com/PXxMF79.png"
+          "title":"USD",
+          "payload":"bot_twb_usd",
         },
         {
           "content_type":"text",
-          "title":"ETH",
-          "payload":"bot_polo_eth",
-          "image_url": "https://i.imgur.com/sro5Ro3.png"
+          "title":"CNY",
+          "payload":"bot_twb_cny",
         },
         {
           "content_type":"text",
-          "title":"ZEC",
-          "payload":"bot_polo_zec",
-          "image_url": "https://i.imgur.com/ACsoHNv.png"
+          "title":"HKD",
+          "payload":"bot_twb_hkd",
         },
         {
           "content_type":"text",
-          "title":"MC",
-          "payload":"bot_polo_mc",
-          "image_url": "https://i.imgur.com/a4F8Y1n.png"
+          "title":"JPY",
+          "payload":"bot_twb_jpy",
         },
         {
           "content_type":"text",
-          "title":"LTC",
-          "payload":"bot_polo_ltc",
-          "image_url": "https://i.imgur.com/IJj18do.png"
+          "title":"GBP",
+          "payload":"bot_twb_gbp",
         }, 
         {
           "content_type":"text",
-          "title":"ETC",
-          "payload":"bot_polo_etc",
-          "image_url": "https://i.imgur.com/xigNgWh.png"
-        },
-        {
-          "content_type":"text",
-          "title":"EXP",
-          "payload":"bot_polo_exp",
-          "image_url": "https://i.imgur.com/gO2C25u.png"
-        },
-        {
-          "content_type":"text",
-          "title":"XMR",
-          "payload":"bot_polo_xmr",
-           "image_url": "https://i.imgur.com/LRrbIz7.png"
-          
-        },
-        {
-          "content_type":"text",
-          "title":"XRP",
-          "payload":"bot_polo_xrp",
-          "image_url": "https://i.imgur.com/mksbGzl.png"
+          "title":"AUD",
+          "payload":"bot_twb_aud",
         }
       ]
     }
