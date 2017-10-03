@@ -12,7 +12,7 @@ const bot = linebot({
 	verify: true // default=true
 });
 
-const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP'];
+const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP', 'BCH'];
 const TWBCOINS = ['USD','CNY', 'HKD','JPY', 'GBP', 'AUD', 'CAD' , 'SGD', 'CHF', 'ZAR', 'SEK', 'NZD', 'THB', 'PHP', 'IDR', 'EUR', 'KRW', 'VND', 'MYR']
 
 const CHANNEL = 'line';
@@ -97,8 +97,17 @@ bot.on('message', function (event) {
 			}
 			else if(msg.substring(0,9) == 'bot mine '){
 				// bot mine
-				var coin = msg.substring(9,msg.length);
-				bot_API.callAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+				var cmd = msg.substring(9,msg.length).split(" ");
+				console.log(cmd);
+				if(cmd.length == 1){
+					var coin = cmd[0];
+					bot_API.callAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+				}
+				else if(cmd.length == 2){
+					var coin = cmd[0];
+					var hashrate = cmd[1];
+					bot_API.callAPI('mine', {'hashrate': hashrate, 'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+				}
 			}
 			else if(msg.substring(0,4) == 'bot '){
 				var coin = msg.substring(4,msg.length)
