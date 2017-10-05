@@ -12,7 +12,7 @@ const bot = linebot({
 	verify: true // default=true
 });
 
-const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP', 'BCH'];
+const ALTCOINS = ['ETH','EXP', 'ETC', 'XMR', 'ZEC', 'MC', 'LTC', 'XRP', 'BCH', 'BTC'];
 const TWBCOINS = ['USD','CNY', 'HKD','JPY', 'GBP', 'AUD', 'CAD' , 'SGD', 'CHF', 'ZAR', 'SEK', 'NZD', 'THB', 'PHP', 'IDR', 'EUR', 'KRW', 'VND', 'MYR']
 
 const CHANNEL = 'line';
@@ -36,7 +36,7 @@ bot.on('message', function (event) {
         case 'text':           
 			if(BOT_STATE['eth_wallet_subsribe_state']){
 				if(isValidEthAddress(event.message.text)){
-					event.reply('註冊成功');
+					bot_API.callAPI('miner/subscribe', {'coin': 'eth', 'address': event.message.text,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 				}
 				else{
 					event.reply('不合法地址');
@@ -46,7 +46,7 @@ bot.on('message', function (event) {
 			}
 			if(BOT_STATE['mc_mine_subsribe_state']){
 				if(isValidEthAddress(event.message.text)){
-					event.reply('註冊成功');
+					bot_API.callAPI('miner/subscribe', {'coin': 'mc', 'address': event.message.text,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 				}
 				else{
 					event.reply('不合法地址');
@@ -75,9 +75,9 @@ bot.on('message', function (event) {
 			else if(msg == 'bot help'){
 				bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 			}
-			else if(msg == 'bot btc'){
-				bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
-			}
+			// else if(msg == 'bot btc'){
+			// 	bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			// }
 			else if(msg == 'p網台銀幣價查詢' || msg =="bot polo"){
 				event.reply(message_objects.bot_polo_twb);
 			}
@@ -98,8 +98,9 @@ bot.on('message', function (event) {
 			else if(msg.substring(0,9) == 'bot mine '){
 				// bot mine
 				var cmd = msg.substring(9,msg.length).split(" ");
-				console.log(cmd);
+			
 				if(cmd.length == 1){
+					console.log(cmd);
 					var coin = cmd[0];
 					bot_API.callAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 				}
