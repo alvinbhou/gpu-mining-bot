@@ -67,7 +67,7 @@ bot.on('message', function (event) {
 				bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
 			}
 			else if(msg == 'bot coins'){
-				event.reply(['請選擇要查詢的幣種', message_objects.bot_coins]);
+				event.reply(message_objects.bot_coins);
 			}
 			else if(msg == 'bot mine'){
 				bot_API.callAPI('mine', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);

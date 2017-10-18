@@ -1,4 +1,4 @@
-var bot_coins = {
+var bot_coins_old = {
 	type: 'imagemap',
 	baseUrl: 'https://i.imgur.com/FPRV3ZE.png/700',
 	altText: '幣價查詢',
@@ -97,7 +97,83 @@ var bot_coins = {
 
 	]
 };
+var bot_coins = {
+	"type": "template",
+	"altText": "bot coins",
+	"template": {
+		"type": "carousel",
+		"columns": [
+			{
+				// "thumbnailImageUrl": "https://technoclever.com/wp-content/uploads/2017/07/List-Of-Cryptocurrencies-in-India-Best-to-Invest.jpg",
+				"title": "幣價查詢",
+				"text": "請選擇欲查詢的幣種",
+				"actions": [
+					{
+						"type": "postback",
+						"label": "BTC",
+						"data": '{"action":"bot_coins","itemid":"btc"}'
+					},
+					{
+						"type": "postback",
+						"label": "ETH",
+						"data": '{"action":"bot_coins","itemid":"eth"}'
+					},
+					{
+						"type": "postback",
+						"label": "MC",
+						"data": '{"action":"bot_coins","itemid":"mc"}'
+					},
+				]
+			},
+			{
+				// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
+				"title": "幣價查詢",
+				"text": "請選擇欲查詢的幣種",
+				"actions": [
 
+					{
+						"type": "postback",
+						"label": "ZEC",
+						"data": '{"action":"bot_coins","itemid":"zec"}'
+					},
+					{
+						"type": "postback",
+						"label": "XMR",
+						"data": '{"action":"bot_coins","itemid":"xmr"}'
+					},
+					{
+						"type": "postback",
+						"label": "LTC",
+						"data": '{"action":"bot_coins","itemid":"ltc"}'
+					}
+				]
+			},
+			{
+				// "thumbnailImageUrl": "https://themerkle.com/wp-content/uploads/2017/02/rare-cryptocurrency.jpg",
+				"title": "幣價查詢",
+				"text": "請選擇欲查詢的幣種",
+				"actions": [
+
+					{
+						"type": "postback",
+						"label": "ETC",
+						"data": '{"action":"bot_coins","itemid":"etc"}'
+					},
+					{
+						"type": "postback",
+						"label": "EXP",
+						"data": '{"action":"bot_coins","itemid":"exp"}'
+					},
+					{
+						"type": "postback",
+						"label": "XRP",
+						"data": '{"action":"bot_coins","itemid":"xrp"}'
+					}
+				]
+			}
+		]
+	}
+};
 var bot_polo_twb = {
 	"type": "template",
 	"altText": "P網/台銀幣價查詢",

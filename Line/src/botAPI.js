@@ -30,6 +30,9 @@ function event_callback(event, postback_data){
         else if(obj['action'] == 'bot_ethwallet_query'){
             getAddress('miner', {'coin': 'eth', 'channel': 'line', 'callerid': chat_id}, event);
         }
+        else if(obj['action'] == 'bot_coins'){
+            callAPI('coin', {'coin': obj['itemid'],'usersay':'bot coin callback event', 'channel':'line', 'callerid': chat_id}, event);
+        }
 
 
     }
