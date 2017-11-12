@@ -53,6 +53,8 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
     process.exit(1);
 }
 
+const BOT_STATE ={};
+
 
 
 /*
@@ -245,11 +247,33 @@ function receivedMessage(event) {
     var quickReplyPayload = quickReply.payload;
     console.log("Quick reply for message {%s} with payload {%s}",
         messageId, quickReplyPayload);
-    var postParas =  parse_helper.getPOSTPara(quickReplyPayload, senderID);
-    console.log(postParas);
-    if(postParas){
-        // console.log('hi');
-        bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+    if(quickReply.payload.includes('bot_ethwallet_')){
+        if(quickReply.payload.includes('bot_ethwallet_subsribe')){
+            BOT_STATE[senderID] = {};
+            BOT_STATE[senderID]['eth_wallet_subsribe_state'] = true;
+            bot_api.callSendAPI(message_data.TextMessage(senderID,'請新增地址'));
+        }
+        else if(quickReply.payload.includes('bot_ethwallet_query')){
+            bot_api.getAddress('miner', {'coin': 'eth', 'channel': 'FB', 'callerid': senderID});
+        }
+    }
+    else if(quickReply.payload.includes('bot_miner_')){
+        if(quickReply.payload.includes('bot_miner_subsribe')){
+            BOT_STATE[senderID] = {};
+            BOT_STATE[senderID]['bot_miner_subsribe_state'] = true;
+            bot_api.callSendAPI(message_data.TextMessage(senderID,'請新增地址'));
+        }
+        else if(quickReply.payload.includes('bot_miner_query')){
+            bot_api.getAddress('miner', {'coin': 'mc', 'channel': 'FB', 'callerid': senderID});
+        }
+    }
+    else{
+        var postParas =  parse_helper.getPOSTPara(quickReplyPayload, senderID);
+        console.log(postParas);
+        if(postParas){
+            // console.log('hi');
+            bot_api.callBot2SendAPI(postParas[0],postParas[1]);
+        }
     }
  
     
@@ -262,27 +286,52 @@ function receivedMessage(event) {
     if (msg) {
         // typing on
         bot_api.callSendAPI(message_data.TypingOn(senderID));
+        console.log(BOT_STATE);
+        if(BOT_STATE.hasOwnProperty(senderID)){
+            console.log(BOT_STATE[senderID].eth_wallet_subsribe_state);
+            if((BOT_STATE[senderID].eth_wallet_subsribe_state) == true){
+                if(isValidEthAddress(msg)){
+                    bot_api.callBot2SendAPI('miner/subscribe', {'coin': 'eth', 'address': msg,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+                }
+                else{               
+                    bot_api.callSendAPI(message_data.TextMessage(senderID,'不合法地址'));
+                }
+                delete BOT_STATE[senderID];
+            }
+            if((BOT_STATE[senderID].bot_miner_subsribe_state) == true){
+                if(isValidEthAddress(msg)){
+                    bot_api.callBot2SendAPI('miner/subscribe', {'coin': 'mc', 'address': msg,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+                }
+                else{               
+                    bot_api.callSendAPI(message_data.TextMessage(senderID,'不合法地址'));
+                }
+                delete BOT_STATE[senderID];
+            }
+            
+            return;
+        }
+        
 
+
+        var orginal_msg = msg;
         msg = msg.toLowerCase();
         if (msg == 'me'){
            
         }
         else if(msg.includes('help')){
-            // bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+            bot_api.callBot2SendAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
         }
         else if(msg == 'bot coins'){
             // event.reply(['請選擇要查詢的幣種', message_objects.bot_coins]);
         }
         else if(msg == 'bot mine'){
+            bot_api.callBot2SendAPI('mine',{'usersay': msg, 'channel': 'FB', 'callerid': senderID});
             // bot_API.callAPI('mine', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
         }
-        else if(msg == 'bot help'){
-            // bot_API.callAPI('help', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
-        }
-        else if(msg == 'bot btc'){
-            // bot_API.callAPI('btc', {'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
-        }
+      
         else if(msg == 'p網/台銀幣價查詢' || msg =="bot polo"){
+            var msg = parse_helper.parsePayload('bot_polo', senderID);
+            bot_api.callSendAPI(msg);
             // event.reply(message_objects.bot_polo_twb);
         }
         else if(msg =='bot ethwallet'){
@@ -296,28 +345,75 @@ function receivedMessage(event) {
         }
         else if(msg.substring(0,9) == 'bot polo '){
             // bot polo
-            // var coin = msg.substring(9,msg.length);
-            // bot_API.callAPI('polo', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+            var coin = msg.substring(9,msg.length);
+            bot_api.callBot2SendAPI('polo', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+        }
+        else if(msg.substring(0,9) == 'bot mine '){
+            // bot mine
+            var cmd = msg.substring(9,msg.length).split(" ");
+        
+            if(cmd.length == 1){
+                console.log(cmd);
+                var coin = cmd[0];
+                bot_api.callBot2SendAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+            }
+            else if(cmd.length == 2){
+                var coin = cmd[0];
+                var hashrate = cmd[1];
+                console.log(coin, hashrate);
+                bot_api.callBot2SendAPI('mine', {'hashrate': hashrate, 'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+            }
+        }
+        else if(msg.substring(0,18) == 'bot ethwallet add '){
+            var addr = orginal_msg.substring(18,orginal_msg.length);
+            console.log(addr);
+            if(isValidEthAddress(addr)){
+                
+                bot_api.callBot2SendAPI('miner/subscribe', {'coin': 'eth', 'address': addr,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+            }
+            else{
+                bot_api.callSendAPI(message_data.TextMessage(senderID,'不合法地址'));
+            }
+
+        }
+        else if(msg == 'bot ethwallet'){
+            bot_api.getAddress('miner', {'coin': 'eth', 'channel': 'FB', 'callerid': senderID});
+        }
+        else if(msg.substring(0,14) == 'bot miner add '){
+            var addr = orginal_msg.substring(14,orginal_msg.length);
+            console.log(addr);
+            if(isValidEthAddress(addr)){
+                
+                bot_api.callBot2SendAPI('miner/subscribe', {'coin': 'mc', 'address': addr,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+            }
+            else{
+                bot_api.callSendAPI(message_data.TextMessage(senderID,'不合法地址'));
+            }
+        }
+        else if(msg == 'bot miner'){
+            bot_api.getAddress('miner', {'coin': 'mc', 'channel': 'FB', 'callerid': senderID});
         }
         else if(msg.substring(0,4) == 'bot '){
-            // var coin = msg.substring(4,msg.length)
-            // // Altcoins
-            // for(var i = 0; i < ALTCOINS.length; ++i){					
-            //     if(coin ==  ALTCOINS[i].toLowerCase()){						
-            //         bot_API.callAPI('coin', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
-            //         break;	
-            //     }
-            // }
-            // // TWB coins
-            // for(var i = 0; i < TWBCOINS.length; ++i){
-            //     if(coin ==  TWBCOINS[i].toLowerCase()){						
-            //         bot_API.callAPI('currency', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
-            //         break;	
-            //     }
-            // }
+            var coin = msg.substring(4,msg.length)
+            console.log(coin);
+            // Altcoins
+            for(var i = 0; i < ALTCOINS.length; ++i){					
+                if(coin ==  ALTCOINS[i].toLowerCase() || coin == 'btc'){						
+                    bot_api.callBot2SendAPI('coin', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+                    break;	
+                }
+            }
+            // TWB coins
+            for(var i = 0; i < TWBCOINS.length; ++i){
+                if(coin ==  TWBCOINS[i].toLowerCase()){						
+                    bot_api.callBot2SendAPI('currency', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': senderID});
+                    break;	
+                }
+            }
         }
+      
         else{
-            // event.reply('您好，請問您需要什麼服務？');
+            bot_api.callSendAPI(message_data.TextMessage(senderID,'您好，請問您需要什麼服務？'));
         }
 
         // If we receive a text message, check to see if it matches any special
@@ -380,8 +476,8 @@ function receivedMessage(event) {
                 bot_api.callSendAPI(message_data.ListTemplate(senderID));
             break;
 
-            default:        
-                bot_api.callSendAPI(message_data.TextMessage(senderID, msg));
+            // default:        
+            //     bot_api.callSendAPI(message_data.TextMessage(senderID, msg));
     }
   } else if (messageAttachments) {
       bot_api.callSendAPI(message_data.TextMessage(senderID, "Message with attachment received"));
@@ -418,7 +514,32 @@ function receivedDeliveryConfirmation(event) {
 /*
  * Postback Event
  *
- * This event is called when a postback is tapped on a Structured Message. 
+ * This event is called when a postback is tapped on a Structured else if(msg.substring(0,9) == 'bot polo '){
+				// bot polo
+				var coin = msg.substring(9,msg.length);
+				bot_API.callAPI('polo', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+			}
+			else if(msg.substring(0,9) == 'bot mine '){
+				// bot mine
+				var cmd = msg.substring(9,msg.length).split(" ");
+			
+				if(cmd.length == 1){
+					console.log(cmd);
+					var coin = cmd[0];
+					bot_API.callAPI('mine', {'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+				}
+				else if(cmd.length == 2){
+					var coin = cmd[0];
+					var hashrate = cmd[1];
+					bot_API.callAPI('mine', {'hashrate': hashrate, 'coin': coin,'usersay': msg, 'channel': CHANNEL, 'callerid': chat_id}, event);
+				}
+			}
+			else if(msg.substring(0,4) == 'bot '){
+				var coin = msg.substring(4,msg.length)
+				// Altcoins
+				for(var i = 0; i < ALTCOINS.length; ++i){					
+					if(coin ==  ALTCOINS[i].toLowerCase()){						
+						bMessage. 
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received
  * 
  */
@@ -447,7 +568,7 @@ function receivedPostback(event) {
     // callbacks to trigger API to reply
     else if(payload.includes('_APICALL')){
         var postParas =  parse_helper.getPOSTPara(payload.replace('_APICALL', ''), senderID);
-        console.log(postParas);
+        console.log("PostParas", postParas);
         if(postParas){           
             bot_api.callBot2SendAPI(postParas[0],postParas[1]);
         }
@@ -497,7 +618,26 @@ function receivedAccountLink(event) {
     "and auth code %s ", senderID, status, authCode);
 }
 
+function getCoinInfo(params) {
+	for(var i = 0; i < ALTCOINS.length; ++i){
+		bot_API.callAPI(ALTCOINS[i], 'bot update coin info', COINS_DATA);
+	}
+}
 
+function isValidEthAddress(addr){
+    if((addr).length != 42){
+		return false;
+	}        
+    if(addr.substring(0,2) != '0x'){
+		return false;
+	}
+	if(/^\w+$/.test(addr)){
+		return true;
+	}       
+    else{
+		return false;
+	}
+}
 
 
 // Start server
@@ -510,7 +650,7 @@ app.listen(app.get('port'), function() {
 
 // var httpServer = http.createServer(app);
 // var httpsServer = https.createServer(credentials, app);
-
+parse_helper
 // httpServer.listen(8877);
 // httpsServer.listen(8443);
 module.exports = app;

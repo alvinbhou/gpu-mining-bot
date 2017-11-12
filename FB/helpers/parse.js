@@ -1,10 +1,8 @@
 const message_data = require('../models/messageData')
 
+
 function getPOSTPara(payload, senderID) {
-    if(payload == 'bot_btc'){
-        return ['btc', {'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
-    }
-    else if(payload.includes('bot_coin_')){
+    if(payload.includes('bot_coin_')){
         var coin = payload.substring(9,payload.length);
         return ['coin', {'coin': coin,'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
     }
@@ -16,9 +14,13 @@ function getPOSTPara(payload, senderID) {
         var coin = payload.substring(8,payload.length);
         return ['currency', {'coin': coin,'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
     }
+    else if(payload.includes('bot_help')){
+        return ['help', {'usersay': 'bot_help', 'channel':'FB', 'callerid': senderID}];
+    }
     else if(payload == 'bot_mine_all'){
         return ['mine', {'usersay': payload, 'channel': 'FB', 'callerid': senderID}];
     }
+   
 
 }
 
@@ -37,6 +39,13 @@ function parsePayload(payload, senderID){
     else if(cmd == 'bot_twb'){
         return message_data.bot_twb(senderID);
     }
+    else if(cmd == 'bot_ethwallet'){
+        return message_data.bot_ethwallet(senderID);
+    }
+    else if(cmd == 'bot_miner'){
+        return message_data.bot_mcminer(senderID);
+    }
+    
     
     
 

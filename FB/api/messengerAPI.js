@@ -97,7 +97,7 @@ var persistentMenuOptions = {
               {
                 "title":"HELP",
                 "type":"postback",
-                "payload":"bot_help"
+                "payload":"bot_help_APICALL"
               }
             ]
           }

@@ -40,22 +40,26 @@ function event_callback(event, postback_data){
   
     
 }
-
-// function callAPI(target, data, event){
-//     var options = {
-//         method: 'POST',
-//         url: 'http://150.95.147.150:3000/' + target,
-//         json: data
-//     };
-//     function callback(error, response, body) {
-//         // console.log(response.statusCode);
-//         if (!error && response.statusCode == 200) {
-//           event.reply(body['ans']);
-//         }
-//     }   
-//     request(options, callback); 
-    
-// }*/
+*/
+function getAddress(target, data){
+    var options = {
+        method: 'POST',
+        url: 'http://150.95.147.150:3000/' + target + '/getAddress',
+        json: data
+    };
+    function callback(error, response, body) {
+        console.log(response.statusCode);
+        if (!error && response.statusCode == 200) {
+            console.log(body);
+            var addr = body['ans'].split(" ");
+            if(addr.length == 3){
+                data['address'] = addr[2];
+            }
+            callBot2SendAPI(target + '/status', data);
+        }
+    }   
+    request(options, callback); 
+}
 
 function callAPI(target, data){
     var options = {
@@ -82,12 +86,29 @@ function callBot2SendAPI(target, data) {
     function callback(error, response, body) {
         console.log(response.statusCode);
         if (!error && response.statusCode == 200) {
-          console.log(body['ans']);
-          if(body['ans'].length >= 640){
-              body['ans'] = body['ans'].substring(0,635) + '...';
-          }
-          callSendAPI(message_data.TextMessage(data.callerid, body['ans']));
-          return body['ans'];
+            console.log(body['ans']);
+            var firstString, idx;
+            var secondString;
+            if(body['ans'].length >= 640){
+                for (var i = 0; i < 640; ++i){
+                    if(body['ans'][i] == '\n'){
+                        idx = i;
+                    }
+                }
+                prevString= body['ans'].substring(0,idx);
+                secondString = body['ans'].substring(idx,);
+                callSendAPI(message_data.TextMessage(data.callerid, prevString));
+                setTimeout(function() {
+                    callSendAPI(message_data.TextMessage(data.callerid, secondString));
+                }, 500)  
+            }
+            else{
+                callSendAPI(message_data.TextMessage(data.callerid, body['ans']));
+            }
+            
+        }
+        else{
+            console.log(response.statusCode);
         }
     }   
     request(options, callback); 
@@ -128,3 +149,4 @@ function callSendAPI(messageData) {
 // exports.callAPI = callAPI
 exports.callSendAPI = callSendAPI
 exports.callBot2SendAPI = callBot2SendAPI
+exports.getAddress = getAddress

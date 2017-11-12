@@ -14,7 +14,7 @@ function bot_coins(recipientId) {
         {
           "content_type":"text",
           "title":"BTC",
-          "payload":"bot_btc",
+          "payload":"bot_coin_btc",
           "image_url": "https://i.imgur.com/PXxMF79.png"
         },
         {
@@ -139,6 +139,56 @@ function bot_polo(recipientId) {
   };  
 }
 
+function bot_ethwallet(recipientId) {
+  return {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "請選擇操作",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"新增地址",
+          "payload":"bot_ethwallet_subsribe",
+          // "image_url": "https://i.imgur.com/PXxMF79.png"
+        },
+        {
+          "content_type":"text",
+          "title":"查詢紀錄",
+          "payload":"bot_ethwallet_query",
+          // "image_url": "https://i.imgur.com/sro5Ro3.png"
+        }
+      ]
+    }
+  };  
+}
+
+function bot_mcminer(recipientId) {
+  return {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "請選擇操作",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"新增地址",
+          "payload":"bot_miner_subsribe",
+          // "image_url": "https://i.imgur.com/PXxMF79.png"
+        },
+        {
+          "content_type":"text",
+          "title":"查詢紀錄",
+          "payload":"bot_miner_query",
+          // "image_url": "https://i.imgur.com/sro5Ro3.png"
+        }
+      ]
+    }
+  };  
+}
+
 function bot_twb(recipientId) {
   return {
     recipient: {
@@ -185,7 +235,8 @@ function bot_twb(recipientId) {
 exports.bot_coins = bot_coins
 exports.bot_polo = bot_polo
 exports.bot_twb = bot_twb
-
+exports.bot_ethwallet = bot_ethwallet
+exports.bot_mcminer = bot_mcminer
 
 exports.AccountLinking = AccountLinking
 exports.AudioMessage = AudioMessage
